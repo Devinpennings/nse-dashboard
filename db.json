@@ -1,0 +1,24 @@
+{
+  "institutes": [
+    {
+      "id": 1,
+      "title": "Fontys Hogescholen ICT",
+      "city": "Eindhoven"
+    },
+    {
+      "id": 2,
+      "title": "Fontys Hogescholen Pedagogiek",
+      "city": "Tilburg"
+    },
+    {
+      "id": 3,
+      "title": "Avans ICT",
+      "city": "Breda"
+    },
+    {
+      "id": 4,
+      "title": "Avans Hogescholen Journalistiek",
+      "city": "Groningen"
+    }
+  ]
+}
