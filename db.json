@@ -3,22 +3,45 @@
     {
       "id": 1,
       "title": "Fontys Hogescholen ICT",
-      "city": "Eindhoven"
+      "city": "Eindhoven",
+      "latt": "51.44950",
+      "longt": "5.47052"
+    },
+    {
+      "id": 6,
+      "title": "Fontys Hogescholen Bouwkunde",
+      "city": "Eindhoven",
+      "latt": "51.44950",
+      "longt": "5.47052"
+    },
+    {
+      "id": 7,
+      "title": "Fontys Hogescholen Journalistiek",
+      "city": "Eindhoven",
+      "latt": "51.44950",
+      "longt": "5.47052"
     },
     {
       "id": 2,
       "title": "Fontys Hogescholen Pedagogiek",
-      "city": "Tilburg"
+      "city": "Tilburg",
+      "latt": "51.56772",
+      "longt": "5.05899"
     },
     {
       "id": 3,
       "title": "Avans ICT",
-      "city": "Breda"
+      "city": "Breda",
+      "latt": "51.58995",
+      "longt": "4.77039"
     },
     {
-      "id": 4,
+      "id": 5,
       "title": "Avans Hogescholen Journalistiek",
-      "city": "Groningen"
+      "city": "Groningen",
+      "latt": "53.22107",
+      "longt": "6.56640"
     }
   ]
 }
+

@@ -17,6 +17,9 @@ const actions = {
         .then((result) => {
 
           const all = result.data.map((institute) => {
+            if (institute.latt && institute.longt) {
+              return institute;
+            }
             return dispatch(FETCH_INSTITUTE_LOCATION, institute);
           });
 
@@ -34,7 +37,7 @@ const actions = {
 
   },
 
-  [FETCH_INSTITUTE_LOCATION] ({state}, institute) {
+  [FETCH_INSTITUTE_LOCATION] ({_state}, institute) {
 
     return new Promise((resolve, reject) => {
 
