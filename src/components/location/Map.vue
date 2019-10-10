@@ -5,6 +5,7 @@
     :interactive="false"
     :zoom="6.4"
     :center="[5.277113, 52.130043]"
+    @load="onLoaded"
   >
 
     <MglMarker
@@ -35,12 +36,13 @@
 
     props: ['locations'],
 
-    events: ['hoverChange', 'selectChange'],
+    events: ['hoverChange', 'selectChange', 'loaded'],
 
     data() {
       return {
         accessToken: "pk.eyJ1IjoiZGV2aW5wZW5uaW5ncyIsImEiOiJjazB3Z2s0cXkxNXByM2hwY2NrMmEwZ3hrIn0.IjhXCXouacXs_T4Ec0VZhA",
         mapStyle: "mapbox://styles/devinpennings/ck0z2bjrv04oh1cnq70talkbt",
+        loaded: false
       };
     },
 
@@ -59,6 +61,10 @@
         this.selected = location;
         this.$emit('selectChange', this.selected);
       },
+
+      onLoaded() {
+        this.$emit('loaded')
+      }
 
     },
 

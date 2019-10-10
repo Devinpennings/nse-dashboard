@@ -41,7 +41,79 @@
       "city": "Groningen",
       "latt": "53.22107",
       "longt": "6.56640"
+    },
+    {
+      "id": 99,
+      "title": "Avans Hogescholen Journalistiek",
+      "city": "Amsterdam"
+    }
+  ],
+  "topic-results": [
+    {
+      "id": 1,
+      "coherence_score": 98,
+      "topics": [
+         {
+          "words": [
+            {
+              "value": "docent",
+              "contribution": 0.1423232
+            },
+            {
+              "value": "les",
+              "contribution": 0.414123
+            },
+            {
+              "value": "klas",
+              "contribution": 0.024214
+            }
+          ],
+          "sentences": [
+            {
+              "value": "zin 1",
+              "contribution": 0.8129892
+            },
+            {
+              "value": "zin 2",
+              "contribution": 0.4229892
+            },
+            {
+              "value": "zin 3",
+              "contribution": 0.0029892
+            }
+          ]
+        },
+        {
+          "words": [
+            {
+              "value": "kantine",
+              "contribution": 0.1423232
+            },
+            {
+              "value": "broodje",
+              "contribution": 0.414123
+            },
+            {
+              "value": "koffie",
+              "contribution": 0.024214
+            }
+          ],
+          "sentences": [
+            {
+              "value": "zin 1",
+              "contribution": 0.8129892
+            },
+            {
+              "value": "zin 2",
+              "contribution": 0.4229892
+            },
+            {
+              "value": "zin 3",
+              "contribution": 0.0029892
+            }
+          ]
+        }
+      ]
     }
   ]
 }
-

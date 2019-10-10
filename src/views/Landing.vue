@@ -25,7 +25,7 @@
           <sui-grid-column id="institutes" :width="7" v-if="selectedLocation">
             <institute-list
               :institutes="selectedLocation.institutes"
-              v-on:selectChange="onInstituteSelectedChanged"
+              v-on:selectSubmit="onInstituteSelectedSubmitted"
             />
           </sui-grid-column>
         </sui-grid-row>
@@ -44,7 +44,7 @@
 
     name: "Landing",
 
-    components: {InstituteList, LocationList, Map },
+    components: { InstituteList, LocationList, Map },
 
     methods: {
       ...mapActions('locations', {
@@ -70,9 +70,12 @@
 
       },
 
-      onInstituteSelectedChanged(institute) {
+      onInstituteSelectedSubmitted(institutes) {
+
+        this.loadingMessage = `Gegevens voor ${institutes.length > 1 ? 'de instituten' : institutes[0].title} aan het verzamelen...`;
         this.loading = true;
-        this.loadingMessage = `Gegevens voor ${institute.title} aan het verzamelen.`
+        this.$router.push('/dashboard');
+
       }
 
     },
@@ -82,8 +85,8 @@
         locations: [],
         hoveredLocations: [],
         selectedLocation: null,
-        loading: false,
-        loadingMessage: "Gegevens ophalen."
+        loading: true,
+        loadingMessage: "Gegevens ophalen..."
       }
     },
 
@@ -91,8 +94,11 @@
 
       this.getLocations()
         .then((result) => {
-          this.locations = result;
-          this.hoveredLocations = result;
+          setTimeout(() => {
+            this.locations = result;
+            this.hoveredLocations = result;
+            this.loading = false;
+          }, 1000)
         });
 
     },
@@ -100,11 +106,7 @@
   }
 </script>
 
-<style>
-
-  html, body {
-    background: #f7f7f7;
-  }
+<style scoped>
 
   .content {
     background: #ffffff;

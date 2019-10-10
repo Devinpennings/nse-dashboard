@@ -5,23 +5,28 @@
         <ul>
           <li id="search">
             <sui-input v-model="searchInput" v-on:input="onSearchChanged" style="width: 100%" placeholder="Zoeken..." icon="search" />
+            <div id="select-all" v-on:click="onSelectAll">
+              {{ shouldSelectAll ? 'Selecteer alles' : 'Deselecteer alles'}}
+            </div>
           </li>
           <li
-            v-for="institute in filteredInstitutes"
+            v-for="institute in sortedInstitutes"
             v-bind:key="institute.id"
             v-on:click="onSelectChange(institute)"
             v-bind:class="{ selected: selected && selected.id === institute.id }"
           >
             {{ institute.title }} <sui-icon v-if="selectedInstitutes.includes(institute)" style="color: #623264" name="check" />
           </li>
-          <li id="empty" v-if="filteredInstitutes.length < 1">
+          <li id="empty" v-if="sortedInstitutes.length < 1">
             Er zijn geen instituten gevonden.
           </li>
         </ul>
       </sui-grid-row>
       <sui-grid-row id="bottom">
-        {{ this.selectedInstitutes.length }} items geselecteerd.
-        <sui-button v-bind:class="{ disabled: selectedInstitutes.length < 1 }" content="Bevestigen" size="small" icon="angle right" label-position="right" />
+        <div id="selected-count">
+          {{ this.selectedInstitutes.length > 0 ? this.selectedInstitutes.length : 'Geen ' }} item{{this.selectedInstitutes.length === 1 ? '' : 's'}}
+        </div>
+        <sui-button v-on:click="onSelectSubmit" v-bind:class="{ disabled: selectedInstitutes.length < 1 }" content="Bevestigen" size="small" icon="angle right" label-position="right" />
       </sui-grid-row>
     </sui-grid>
   </div>
@@ -32,7 +37,7 @@
 
     name: "InstituteList",
     props: ['institutes'],
-    events: ['selectChange'],
+    events: ['selectChange', 'selectSubmit'],
 
     data() {
       return {
@@ -41,6 +46,18 @@
         searchInput: "",
         selectedInstitutes: []
       }
+    },
+
+    computed: {
+
+      sortedInstitutes() {
+        return [...this.filteredInstitutes].sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+      },
+
+      shouldSelectAll() {
+        return !this.filteredInstitutes.every((i) => this.selectedInstitutes.includes(i));
+      }
+
     },
 
     methods: {
@@ -64,7 +81,23 @@
           this.selectedInstitutes.push(institute)
         }
 
-        // this.$emit('selectChange', institute);
+      },
+
+      onSelectSubmit() {
+        this.$emit('selectSubmit', this.selectedInstitutes);
+      },
+
+      onSelectAll() {
+
+        if (this.shouldSelectAll) {
+          this.filteredInstitutes.forEach((i) => {
+            if (!this.selectedInstitutes.includes(i)) {
+              this.selectedInstitutes.push(i);
+            }
+          });
+        } else {
+          this.selectedInstitutes = this.selectedInstitutes.filter((i) => !this.filteredInstitutes.includes(i))
+        }
 
       }
 
@@ -111,6 +144,17 @@
     background: transparent !important;
   }
 
+  #select-all {
+    width: 100%;
+    color: #8a478d;
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  #select-all:hover {
+    color: #623264;
+  }
+
   #empty {
     color: rgba(0,0,0,0.51);
   }
@@ -133,6 +177,24 @@
     margin: 0;
   }
 
+  #selected-count {
+    color: rgb(125, 125, 125);
+    margin: 8px !important;
+    margin-left: 16px !important;
+    align-self: center !important;
+    cursor: default !important;
+  }
+
+  #bottom div, i {
+    padding: 0 !important;
+  }
+
+  #bottom i {
+    align-self: center !important;
+    margin-bottom: 6px !important;
+    margin-left: 32px !important;
+  }
+
   #bottom .button {
     background-color: rgba(98, 50, 100, 0.88);
     color: white;
@@ -140,6 +202,10 @@
     width: auto !important;
     margin: 8px !important;
     margin-left: auto !important;
+  }
+
+  #bottom .disabled {
+    background-color: rgb(112, 111, 111) !important;
   }
 
   #bottom .button:hover {
