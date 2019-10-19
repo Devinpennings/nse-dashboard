@@ -74,7 +74,10 @@
 
         this.loadingMessage = `Gegevens voor ${institutes.length > 1 ? 'de instituten' : institutes[0].title} aan het verzamelen...`;
         this.loading = true;
-        this.$router.push('/dashboard');
+
+        setTimeout(() => {
+          this.$router.push('/dashboard');
+        }, 3000)
 
       }
 

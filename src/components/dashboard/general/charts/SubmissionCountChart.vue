@@ -1,11 +1,11 @@
 <script>
 
-  import {Bar} from "vue-chartjs";
+  import {HorizontalBar} from "vue-chartjs";
 
   export default {
 
-    name: "SubmissionLengthChart",
-    extends: Bar,
+    name: "SubmissionCountChart",
+    extends: HorizontalBar,
     props: {
       chartdata: {
         type: Object,
@@ -14,10 +14,9 @@
             labels: ['2013', '2014', '2015', '2016', '2017', '2018'],
             datasets: [
               {
-                label: 'Gemiddelde opmerking lengte',
-                data: [515, 421, 611, 711, 384, 458],
+                label: 'Hoeveelheid opmerkingen',
+                data: [124, 182, 89, 224, 184, 158],
                 backgroundColor: "#3d1f3e",
-
               },
             ],
           }

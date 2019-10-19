@@ -2,11 +2,16 @@
   <div id="app">
     <sui-grid id="main">
       <sui-grid-row id="main-top" v-if="showMenu" vertical-align="middle">
-        <sui-grid-column :width="16">
-          <sui-icon name="chevron left" v-on:click="onBackButtonClick()"/>
-          Dashboard
+        <sui-grid-column :width="6">
+          Nationale Studenten Enquete
+        </sui-grid-column>
+        <sui-grid-column :width="8" text-align="right" floated="right">
+          <sui-input placeholder="Zoek naar onderwerp..." icon="search"/>
         </sui-grid-column>
       </sui-grid-row>
+<!--      <div id="return">-->
+<!--        <sui-icon name="chevron left" v-on:click="onBackButtonClick()"/> ga terug-->
+<!--      </div>-->
       <sui-grid-row id="content" class="center-container">
         <router-view></router-view>
       </sui-grid-row>
@@ -45,7 +50,7 @@
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
     user-select: none !important;
-    overflow: hidden;
+    /*overflow: hidden;*/
   }
 
   .mapboxgl-map{
@@ -105,9 +110,18 @@
     width: 100%;
   }
 
+  #main-top::before, #main-top::after {
+    content: "";
+    width: 3vw;
+  }
+
   #content {
     width: 100%;
     margin-top: 32px;
+  }
+
+  .ui.input {
+    font-size: 14px !important;
   }
 
 </style>

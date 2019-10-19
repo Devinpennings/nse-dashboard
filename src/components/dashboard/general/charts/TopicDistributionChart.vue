@@ -1,25 +1,31 @@
 <script>
 
-  import {Bar} from "vue-chartjs";
+  import {Doughnut} from "vue-chartjs";
 
   export default {
 
     name: "SubmissionLengthChart",
-    extends: Bar,
+    extends: Doughnut,
     props: {
       chartdata: {
         type: Object,
         default() {
           return {
-            labels: ['2013', '2014', '2015', '2016', '2017', '2018'],
+            labels: ['Docenten', 'Kantine', 'Tentamens', 'Huiswerk', 'Muziek', 'Overige'],
             datasets: [
               {
-                label: 'Gemiddelde opmerking lengte',
-                data: [515, 421, 611, 711, 384, 458],
-                backgroundColor: "#3d1f3e",
-
+                data: [201, 155, 65, 24, 8, 6],
+                backgroundColor: [
+                  "#3d1f3e",
+                  "#4e214f",
+                  "#562857",
+                  "#7c3f7e",
+                  "#a856ab",
+                  "#de71e2",
+                ]
               },
             ],
+
           }
         }
       },
@@ -30,7 +36,7 @@
             maintainAspectRatio: false,
             responsive: true,
             legend: {
-              display: false
+              position: "bottom"
             }
           }
         }
