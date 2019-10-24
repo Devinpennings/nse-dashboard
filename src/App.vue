@@ -2,12 +2,14 @@
   <div id="app">
     <sui-grid id="main">
       <sui-grid-row id="main-top" v-if="showMenu" vertical-align="middle">
+
         <sui-grid-column :width="6">
           Nationale Studenten Enquete
         </sui-grid-column>
         <sui-grid-column :width="8" text-align="right" floated="right">
           <sui-input placeholder="Zoek naar onderwerp..." icon="search"/>
         </sui-grid-column>
+        <img src="../public/assets/logo.jpeg"  alt="logo"/>
       </sui-grid-row>
 <!--      <div id="return">-->
 <!--        <sui-icon name="chevron left" v-on:click="onBackButtonClick()"/> ga terug-->
@@ -113,6 +115,12 @@
   #main-top::before, #main-top::after {
     content: "";
     width: 3vw;
+  }
+
+  #main-top img {
+    height: 48px;
+    width: auto;
+    margin: -7px 8px 0 16px;
   }
 
   #content {
