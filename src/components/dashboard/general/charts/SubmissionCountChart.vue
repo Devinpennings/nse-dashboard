@@ -1,11 +1,11 @@
 <script>
 
-  import {HorizontalBar} from "vue-chartjs";
+  import {Bar} from "vue-chartjs";
 
   export default {
 
     name: "SubmissionCountChart",
-    extends: HorizontalBar,
+    extends: Bar,
     props: {
       chartdata: {
         type: Object,
@@ -15,8 +15,8 @@
             datasets: [
               {
                 label: 'Hoeveelheid opmerkingen',
-                data: [124, 182, 89, 224, 184, 158],
-                backgroundColor: "#3d1f3e",
+                data: [4422, 3213, 4589, 5624, 6284, 6421],
+                backgroundColor: '#4D8EEA'
               },
             ],
           }
@@ -30,6 +30,29 @@
             responsive: true,
             legend: {
               display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  suggestedMin: 0,
+                  display: false
+                },
+                gridLines: {
+                  display: false,
+                },
+              }],
+              xAxes: [{
+                gridLines: {
+                  display: false,
+                },
+              }]
+            },
+            plugins: {
+              datalabels: {
+                display: true,
+                anchor: 'end',
+                align: 'top'
+              }
             }
           }
         }

@@ -1,14 +1,20 @@
 <template>
   <div class="center-container" id="content">
     <sui-grid centered class="fullwidth">
-      <sui-grid-row>
+      <sui-grid-row id="icon">
+        <sui-icon name="building" size="big"/>
+      </sui-grid-row>
+      <sui-grid-row id="title">
+        <h2>Selecteer een instituut</h2>
+      </sui-grid-row>
+      <sui-grid-row id="content-list">
+        <div id="search">
+          <sui-input v-model="searchInput" v-on:input="onSearchChanged" style="width: 100%" placeholder="Zoeken..." icon="search" />
+          <div id="select-all" v-on:click="onSelectAll">
+            {{ shouldSelectAll ? 'Selecteer alles' : 'Deselecteer alles'}}
+          </div>
+        </div>
         <ul>
-          <li id="search">
-            <sui-input v-model="searchInput" v-on:input="onSearchChanged" style="width: 100%" placeholder="Zoeken..." icon="search" />
-            <div id="select-all" v-on:click="onSelectAll">
-              {{ shouldSelectAll ? 'Selecteer alles' : 'Deselecteer alles'}}
-            </div>
-          </li>
           <li
             v-for="institute in sortedInstitutes"
             v-bind:key="institute.id"
@@ -119,7 +125,17 @@
 <style scoped>
 
   #content {
-    background: rgba(0, 0, 0, 0.03);
+    background: #ffffff;
+    padding-top: 24px !important;
+  }
+
+  ::-webkit-scrollbar {
+    display: block !important;
+  }
+
+  #icon {
+    padding-bottom: 6px !important;
+    color: #623264;
   }
 
   ul {
@@ -139,9 +155,12 @@
     background: rgba(0, 0, 0, 0.03);
   }
 
-  #search:hover, #search.selected {
+  #search {
     width: 100%;
     background: transparent !important;
+    margin-right: 12px;
+    margin-left: 12px;
+    margin-bottom: 12px;
   }
 
   #select-all {
@@ -159,13 +178,22 @@
     color: rgba(0,0,0,0.51);
   }
 
+  #content-list {
+    padding-bottom: 0 !important;
+  }
+
+  #content-list ul {
+    height: 300px;
+    overflow-y: scroll;
+    scroll-padding: 10px !important;
+  }
+
   i {
     float: right !important;
   }
 
   #bottom {
     bottom: 0 !important;
-    position: absolute;
     display: flex;
     width: 100% !important;
     background: rgba(0, 0, 0, 0.04);
@@ -210,6 +238,10 @@
 
   #bottom .button:hover {
     background-color: #623264;
+  }
+
+  .fullwidth {
+    height: 100%;
   }
 
 </style>

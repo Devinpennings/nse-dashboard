@@ -1,5 +1,5 @@
 import {RepositoryFactory} from "../../repository/repositoryFactory";
-import {FETCH_TOPIC_RESULTS} from "../actions";
+import {FETCH_TOPICS} from "../actions";
 
 const state = {
   all: [],
@@ -7,16 +7,22 @@ const state = {
 
 const actions = {
 
-  [FETCH_TOPIC_RESULTS] ({commit}) {
+  [FETCH_TOPICS] ({commit}) {
 
     return new Promise((resolve, reject) => {
 
-      const repository = RepositoryFactory.get('topicResults');
+      const repository = RepositoryFactory.get('topics');
 
       repository.all()
         .then((result) => {
-          commit('setTopics', result.data);
-          resolve(result.data)
+          let topics = result.data.map((r) => {
+            return {
+              ...r,
+              value: r.words.map(s => s.value.charAt(0).toUpperCase() + s.value.substring(1)).join(', '),
+            }
+          });
+          commit('setTopics', topics);
+          resolve(topics)
         })
         .catch((e) => {
           reject(e);

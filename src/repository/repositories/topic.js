@@ -1,6 +1,6 @@
 import Repository from "../repository";
 
-const resource = "/topic-results";
+const resource = "/topics";
 
 export default {
 

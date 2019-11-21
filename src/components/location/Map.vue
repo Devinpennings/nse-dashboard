@@ -17,7 +17,7 @@
       v-on:click="onSelectChange(location)"
     >
       <div slot="marker">
-        <div style="width: 8px; height: 8px; background: rgba(98,50,100,0.64); border-radius: 100px"></div>
+        <div style="width: 8px; height: 8px; background: rgb(171,123,167); border-radius: 100px"></div>
       </div>
     </MglMarker>
   </MglMap>

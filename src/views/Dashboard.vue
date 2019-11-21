@@ -2,52 +2,56 @@
   <div id="main">
     <sui-grid id="center">
 
-        <sui-grid-row class="title" vertical-align="middle">
-          <sui-grid-column class="tab active">
-            Algemeen
-          </sui-grid-column>
-          <sui-grid-column class="tab">
-            Onderwerpen
-          </sui-grid-column>
-          <sui-grid-column class="tab">
-            Sentiment
-          </sui-grid-column>
-          <sui-grid-column floated="right" text-align="right" :width="4">
-            2013 - 2018 <sui-icon name="angle down"></sui-icon>
-          </sui-grid-column>
-        </sui-grid-row>
+<!--        <sui-grid-row class="title" vertical-align="middle">-->
+<!--          <sui-grid-column class="tab active">-->
+<!--            Algemeen-->
+<!--          </sui-grid-column>-->
+<!--          <sui-grid-column class="tab">-->
+<!--            Onderwerpen-->
+<!--          </sui-grid-column>-->
+<!--          <sui-grid-column class="tab">-->
+<!--            Sentiment-->
+<!--          </sui-grid-column>-->
+<!--          <sui-grid-column floated="right" text-align="right" :width="4">-->
+<!--            <sui-dropdown-->
+<!--              floating-->
+<!--              :icon="null"-->
+<!--              :options="availableYears"-->
+<!--              v-model="startYear"-->
+<!--              class="year"-->
+<!--            />-->
+<!--            - -->
+<!--            <sui-dropdown-->
+<!--              floating-->
+<!--              :icon="null"-->
+<!--              :options="availableYears"-->
+<!--              v-model="endYear"-->
+<!--              class="year"-->
+<!--            />-->
+<!--          </sui-grid-column>-->
+<!--        </sui-grid-row>-->
 
         <sui-grid id="content" columns="equal">
 
-          <DashboardPanel title="Ontvangen" :width="8">
+          <DashboardPanel title="Meest besproken onderwerpen" description="Hier worden de meest besproken onderwerpen weergegeven." :width="10" :padded="false">
             <template v-slot:icon>
-              <sui-icon name="paper plane"/>
-            </template>
-            <SubmissionCountChart></SubmissionCountChart>
-          </DashboardPanel>
-          <DashboardPanel title="Meest besproken" :width="8" :padded="false">
-            <template v-slot:icon>
-              <sui-icon name="fire"/>
+              <sui-icon style="color: #EF5B70" name="fire"/>
             </template>
             <TrendingTopicsList></TrendingTopicsList>
           </DashboardPanel>
-          <DashboardPanel title="Opmerkingen" :width="4" :padded="false">
+
+          <DashboardPanel title="Aantal inzendingen" description="Hier worden de hoeveelheid inzendingen op de open vraag weergegeven." :width=6>
             <template v-slot:icon>
-              <sui-icon name="comment"/>
+              <sui-icon style="color: #4D8EEA" name="paper plane"/>
             </template>
-            <SubmissionList></SubmissionList>
+            <SubmissionCountChart></SubmissionCountChart>
           </DashboardPanel>
-          <DashboardPanel title="Opmerking lengte" :width="8">
+
+          <DashboardPanel title="Trends" :width="16">
             <template v-slot:icon>
-              <sui-icon name="text width"/>
+              <sui-icon style="color: #59D6AF" name="chart line" />
             </template>
-            <SubmissionLengthChart></SubmissionLengthChart>
-          </DashboardPanel>
-          <DashboardPanel title="Onderwerp verspreiding" :width="4">
-            <template v-slot:icon>
-              <sui-icon name="chart pie"/>
-            </template>
-            <TopicDistributionChart></TopicDistributionChart>
+            <TrendChart></TrendChart>
           </DashboardPanel>
 
         </sui-grid>
@@ -59,32 +63,67 @@
 
 <script>
 
-  import {FETCH_TOPIC_RESULTS} from "../store/actions";
-  import {mapActions} from "vuex";
+  import {FETCH_TOPICS, SET_END_YEAR, SET_START_YEAR} from "../store/actions";
+  import {mapActions, mapMutations} from "vuex";
   import DashboardPanel from "../components/dashboard/DashboardPanel";
   import TrendingTopicsList from "../components/dashboard/general/charts/TrendingTopicsList";
   import SubmissionCountChart from "../components/dashboard/general/charts/SubmissionCountChart";
-  import SubmissionLengthChart from "../components/dashboard/general/charts/SubmissionLengthChart";
-  import TopicDistributionChart from "../components/dashboard/general/charts/TopicDistributionChart";
-  import SubmissionList from "../components/dashboard/general/charts/SubmissionList";
+  import TrendChart from "../components/dashboard/general/charts/TrendChart";
 
   export default {
 
     name: "Dashboard",
     components: {
-      SubmissionList,
-      TrendingTopicsList, SubmissionCountChart, DashboardPanel, SubmissionLengthChart, TopicDistributionChart},
+      TrendingTopicsList, SubmissionCountChart, DashboardPanel, TrendChart
+    },
+
     data() {
       return {
         loading: false,
-        topicResults: []
+        topicResults: [],
       }
     },
 
+    computed: {
+
+      startYear: {
+        get() {
+          return this.$store.state.dashboard.startYear;
+        },
+        set(newValue) {
+          return this.setStartYear(newValue)
+        }
+      },
+      endYear: {
+        get() {
+          return this.$store.state.dashboard.endYear;
+        },
+        set(newValue) {
+          return this.setEndYear(newValue)
+        }
+      },
+      availableYears() {
+        return this.$store.state.dashboard.availableYears.map(this.yearToSelect)
+      }
+
+    },
+
     methods: {
-      ...mapActions('topicResults', {
-        getTopics: FETCH_TOPIC_RESULTS,
+
+      ...mapActions('topics', {
+        getTopics: FETCH_TOPICS,
       }),
+
+      ...mapMutations('dashboard', {
+        setStartYear: SET_START_YEAR,
+        setEndYear: SET_END_YEAR
+      }),
+
+      yearToSelect(year) {
+        if (!year) return undefined;
+        return { text: year.toString(), value: year}
+      }
+
     },
 
     beforeMount() {
@@ -113,6 +152,8 @@
     height: 100%;
     width: 100%;
     margin: 4vh 3vw!important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
 
   #center {
@@ -139,23 +180,32 @@
     padding: 8px !important;
   }
 
-  .tab:hover, .right:hover {
+  .tab:hover {
+    color: #7f7f7f;
+  }
+
+  .year:hover {
     color: #7f7f7f;
   }
 
   .active {
-    color: #414141;
+    color: #5b5b5b;
     border-bottom: 1px #414141;
   }
 
   .active:hover {
-    color: #414141;
+    color: #5b5b5b;
   }
 
   .right {
     float: right;
     padding-right: 0 !important;
     font-size: 18px;
+  }
+
+  .year-dropdown {
+    -moz-appearance: none;
+    appearance: none;
   }
 
   i {
@@ -165,6 +215,12 @@
   #content {
     width: 100%;
     padding: 0 !important;
+    margin-top: 16px !important;
+  }
+
+  .intro {
+    font-family: 'Roboto', sans-serif;
+    color: #5b5b5b;
   }
 
 </style>

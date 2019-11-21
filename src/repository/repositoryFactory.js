@@ -1,9 +1,9 @@
 import Institute from './repositories/institute';
-import TopicResult from './repositories/topic-result';
+import Topic from './repositories/topic';
 
 const repositories = {
     institutes: Institute,
-    topicResults: TopicResult
+    topics: Topic
 };
 
 export const RepositoryFactory = {

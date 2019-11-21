@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import institutes from "./modules/institutes";
 import locations from "./modules/locations";
-import topicResults from "./modules/topic-results";
+import topics from "./modules/topics";
+import dashboard from "./modules/dashboard";
 
 Vue.use(Vuex);
 
@@ -12,7 +13,8 @@ export default new Vuex.Store({
     modules: {
         institutes,
         locations,
-        topicResults
+        topics,
+        dashboard
     },
     strict: debug,
 })

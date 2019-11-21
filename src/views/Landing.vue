@@ -8,14 +8,18 @@
         </sui-grid-column>
         <sui-grid-row v-if="!loading">
           <sui-grid-column :width="9">
-            <LocationList
-              :locations="locations"
-              :hovered="hoveredLocations"
-              v-on:hoverChange="onLocationHoveredChanged"
-              v-on:selectChange="onLocationSelectedChanged"
+            <institute-list
+              :institutes="institutes"
+              v-on:selectSubmit="onInstituteSelectedSubmitted"
             />
           </sui-grid-column>
-          <sui-grid-column id="map" :width="7" v-if="!selectedLocation">
+          <sui-grid-column id="logo" :width="7" v-if="!selectedLocation">
+            <img src="../../public/assets/logo-inverted.png">
+            <p>
+              Nationale Studenten Enquete
+            </p>
+          </sui-grid-column>
+          <sui-grid-column id="map" :width="7" v-if="selectedLocation">
             <Map
               :locations="hoveredLocations"
               v-on:hoverChange="onLocationHoveredChanged"
@@ -23,9 +27,11 @@
             />
           </sui-grid-column>
           <sui-grid-column id="institutes" :width="7" v-if="selectedLocation">
-            <institute-list
-              :institutes="selectedLocation.institutes"
-              v-on:selectSubmit="onInstituteSelectedSubmitted"
+            <LocationList
+              :locations="locations"
+              :hovered="hoveredLocations"
+              v-on:hoverChange="onLocationHoveredChanged"
+              v-on:selectChange="onLocationSelectedChanged"
             />
           </sui-grid-column>
         </sui-grid-row>
@@ -35,8 +41,8 @@
 
 <script>
   import Map from "../components/location/Map";
-  import {mapActions} from "vuex";
-  import {FETCH_LOCATIONS} from "../store/actions";
+  import {mapActions, mapMutations} from "vuex";
+  import {FETCH_INSTITUTES, SET_SELECTED_INSTITUTES} from "../store/actions";
   import LocationList from "../components/location/LocationList";
   import InstituteList from "../components/location/InstituteList";
 
@@ -47,8 +53,13 @@
     components: { InstituteList, LocationList, Map },
 
     methods: {
-      ...mapActions('locations', {
-        getLocations: FETCH_LOCATIONS,
+
+      ...mapActions('institutes', {
+        getInstitutes: FETCH_INSTITUTES
+      }),
+
+      ...mapMutations('dashboard', {
+        setSelectedInstitutes: SET_SELECTED_INSTITUTES
       }),
 
       onLocationHoveredChanged(location) {
@@ -75,6 +86,8 @@
         this.loadingMessage = `Gegevens voor ${institutes.length > 1 ? 'de instituten' : institutes[0].title} aan het verzamelen...`;
         this.loading = true;
 
+        this.setSelectedInstitutes(institutes);
+
         setTimeout(() => {
           this.$router.push('/dashboard');
         }, 3000)
@@ -85,6 +98,7 @@
 
     data() {
       return {
+        institutes: [],
         locations: [],
         hoveredLocations: [],
         selectedLocation: null,
@@ -95,14 +109,23 @@
 
     beforeMount() {
 
-      this.getLocations()
-        .then((result) => {
-          setTimeout(() => {
-            this.locations = result;
-            this.hoveredLocations = result;
-            this.loading = false;
-          }, 1000)
-        });
+      // this.getLocations()
+      //   .then((result) => {
+      //     setTimeout(() => {
+      //       this.locations = result;
+      //       this.hoveredLocations = result;
+      //       this.loading = false;
+      //     }, 1000)
+      //   });
+
+        this.getInstitutes()
+          .then((result) => {
+            setTimeout(() => {
+              this.institutes = result;
+              this.hoveredLocations = result;
+              this.loading = false;
+            }, 1000)
+          })
 
     },
 
@@ -127,6 +150,25 @@
     display: flex !important;
     align-items: center !important;
     color: rgba(0,0,0,0.74);
+  }
+
+  #logo {
+    background: rgb(79, 54, 79);
+    height: 100%;
+    display: grid;
+  }
+
+  #logo img {
+    height: 100px;
+    image-rendering: smooth;
+    margin: auto auto 0;
+  }
+
+  #logo p {
+    margin: 8px auto auto;
+    color: white;
+    font-family: 'Raleway', sans-serif;
+    font-size: 18px;
   }
 
   #map {

@@ -1,16 +1,30 @@
+import {SET_AVAILABLE_YEARS, SET_END_YEAR, SET_SELECTED_INSTITUTES, SET_START_YEAR} from "../actions";
+
 const state = {
   selectedInstitutes: [],
-  selectedYears: []
+  startYear: undefined,
+  endYear: undefined,
+  availableYears: [2012, 2013, 2014, 2015, 2016]
 };
 
 const mutations = {
 
-  setSelectedInstitutes(state, institutes) {
+  [SET_SELECTED_INSTITUTES] (state, institutes) {
     state.selectedInstitutes = institutes;
   },
 
-  setSelectedYears(state, years) {
-    state.selectedYears = years;
+  [SET_START_YEAR] (state, year) {
+    state.startYear = year;
+  },
+
+  [SET_END_YEAR] (state, year) {
+    state.endYear = year;
+  },
+
+  [SET_AVAILABLE_YEARS] ({state, commit}, years) {
+    state.availableYears = years;
+    commit(SET_START_YEAR, Math.min(years));
+    commit(SET_END_YEAR, Math.max(years));
   }
 
 };

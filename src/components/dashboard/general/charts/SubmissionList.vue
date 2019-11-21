@@ -70,7 +70,7 @@
     display: inline-block;
     width: 2px;
     height: 100%;
-    background-color: #623264;
+    background-color: #EF5B70;
     left: 0;
     top: 0;
     position: absolute;
