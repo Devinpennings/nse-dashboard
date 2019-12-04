@@ -5,8 +5,12 @@ export const FETCH_INSTITUTE_LOCATION = 'Fetch institute locations';
 // Locations
 export const FETCH_LOCATIONS = 'Fetch locations';
 
+// Disciplines
+export const GET_DISCIPLINE_BY_INSTITUTE = 'Get discipline by institute';
+
 // Topics
 export const FETCH_TOPICS = 'Fetch topics';
+export const GET_TOPIC = 'Get topic';
 
 // Dashboard
 export const SET_SELECTED_INSTITUTES = 'Set selected institutes';

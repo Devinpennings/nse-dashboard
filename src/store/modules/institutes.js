@@ -17,6 +17,7 @@ const actions = {
         .then((result) => {
 
           const all = result.data.map((institute) => {
+            return institute;
             if (institute.latt && institute.longt) {
               return institute;
             }

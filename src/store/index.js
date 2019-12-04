@@ -4,6 +4,7 @@ import institutes from "./modules/institutes";
 import locations from "./modules/locations";
 import topics from "./modules/topics";
 import dashboard from "./modules/dashboard";
+import disciplines from "./modules/disciplines";
 
 Vue.use(Vuex);
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
         institutes,
         locations,
         topics,
+        disciplines,
         dashboard
     },
     strict: debug,

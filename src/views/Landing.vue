@@ -8,30 +8,38 @@
         </sui-grid-column>
         <sui-grid-row v-if="!loading">
           <sui-grid-column :width="9">
-            <institute-list
-              :institutes="institutes"
-              v-on:selectSubmit="onInstituteSelectedSubmitted"
+            <selectable-list
+              :items="institutes"
+              icon="building"
+              title="Selecteer een instituut"
+              display-field="name"
+              allow-search
+              v-on:selectChange="onInstituteSelectedChange($event)"
             />
           </sui-grid-column>
-          <sui-grid-column id="logo" :width="7" v-if="!selectedLocation">
+          <sui-grid-column id="logo" :width="7" v-if="!selectedInstitute">
             <img src="../../public/assets/logo-inverted.png">
             <p>
               Nationale Studenten Enquete
             </p>
           </sui-grid-column>
-          <sui-grid-column id="map" :width="7" v-if="selectedLocation">
+          <sui-grid-column id="map" :width="7" v-if="false">
             <Map
               :locations="hoveredLocations"
               v-on:hoverChange="onLocationHoveredChanged"
               v-on:selectChange="onLocationSelectedChanged"
             />
           </sui-grid-column>
-          <sui-grid-column id="institutes" :width="7" v-if="selectedLocation">
-            <LocationList
-              :locations="locations"
-              :hovered="hoveredLocations"
-              v-on:hoverChange="onLocationHoveredChanged"
-              v-on:selectChange="onLocationSelectedChanged"
+          <sui-grid-column id="disciplines" :width="7" v-if="disciplines && disciplines.length > 0">
+            <SelectableList
+              :items="disciplines"
+              icon="graduation cap"
+              title="Selecteer een opleiding"
+              display-field="name"
+              allow-search
+              allow-multi-select
+              allow-select-all
+              disable-bottom
             />
           </sui-grid-column>
         </sui-grid-row>
@@ -42,20 +50,23 @@
 <script>
   import Map from "../components/location/Map";
   import {mapActions, mapMutations} from "vuex";
-  import {FETCH_INSTITUTES, SET_SELECTED_INSTITUTES} from "../store/actions";
-  import LocationList from "../components/location/LocationList";
-  import InstituteList from "../components/location/InstituteList";
+  import {FETCH_INSTITUTES, GET_DISCIPLINE_BY_INSTITUTE, SET_SELECTED_INSTITUTES} from "../store/actions";
+  import SelectableList from "../components/location/SelectableList";
 
   export default {
 
     name: "Landing",
 
-    components: { InstituteList, LocationList, Map },
+    components: {SelectableList, Map },
 
     methods: {
 
       ...mapActions('institutes', {
         getInstitutes: FETCH_INSTITUTES
+      }),
+
+      ...mapActions('disciplines', {
+        getDisciplinesByInstitute: GET_DISCIPLINE_BY_INSTITUTE
       }),
 
       ...mapMutations('dashboard', {
@@ -81,16 +92,12 @@
 
       },
 
-      onInstituteSelectedSubmitted(institutes) {
+      onInstituteSelectedChange(institute) {
 
-        this.loadingMessage = `Gegevens voor ${institutes.length > 1 ? 'de instituten' : institutes[0].title} aan het verzamelen...`;
-        this.loading = true;
-
-        this.setSelectedInstitutes(institutes);
-
-        setTimeout(() => {
-          this.$router.push('/dashboard');
-        }, 3000)
+        this.selectedInstitute = institute;
+        this.getDisciplinesByInstitute(institute.instituteId).then((result) => {
+          this.disciplines = result;
+        })
 
       }
 
@@ -101,9 +108,10 @@
         institutes: [],
         locations: [],
         hoveredLocations: [],
-        selectedLocation: null,
+        selectedInstitute: null,
         loading: true,
-        loadingMessage: "Gegevens ophalen..."
+        loadingMessage: "Gegevens ophalen...",
+        disciplines: []
       }
     },
 
@@ -136,9 +144,9 @@
 
   .content {
     background: #ffffff;
-    -webkit-box-shadow: 5px 7px 13px 0px rgba(181,181,181,1);
-    -moz-box-shadow: 5px 7px 13px 0px rgba(181,181,181,1);
-    box-shadow: 5px 7px 13px 0px rgba(181,181,181,1);
+    -webkit-box-shadow: 5px 7px 13px 0 rgba(181,181,181,1);
+    -moz-box-shadow: 5px 7px 13px 0 rgba(181,181,181,1);
+    box-shadow: 5px 7px 13px 0 rgba(181,181,181,1);
     border-radius: 6px;
     width: 1200px;
     height: 600px;

@@ -1,25 +1,13 @@
 <template>
   <div class="fullHeight wrapper">
     <div v-for="topic in topics" v-bind:key="topic.name" class="list-item-outer">
-      <div class="list-item" v-on:mousedown="extend(topic)">
+      <div class="list-item" v-on:mousedown="onTopicClick(topic)">
         <div class="comment-count">
           <sui-icon name="comment outline"></sui-icon>
           {{topic.commentCount}}
         </div>
         {{topic.value}}
-        <sui-icon v-if="!topic.extended" class="extender" name="angle right"></sui-icon>
-        <sui-icon v-else class="extender" name="angle down"></sui-icon>
-      </div>
-      <div class="extension" v-if="topic.extended">
-        <div v-for="sentence in topic.sentences" v-on:click="extend(sentence)" v-bind:class="{'odd': topic.sentences.indexOf(sentence) % 2 === 0}" v-bind:key="sentence.value" class="sentence">
-          <div class="sentence-text" v-bind:class="{ 'extended': sentence.extended}" >
-            {{sentence.value}}
-          </div>
-          <div class="rating" >
-            <sui-icon :name="getThumpsUpIcon(sentence)" v-on:click="toggleRateUp(sentence)"/>
-            <sui-icon :name="getThumpsDownIcon(sentence)" v-on:click="toggleRateDown(sentence)"/>
-          </div>
-        </div>
+        <sui-icon class="extender" name="angle right"></sui-icon>
       </div>
     </div>
     <div class="list-item-last">
@@ -93,8 +81,8 @@
       ...mapActions('topics', {
         getTopics: FETCH_TOPICS,
       }),
-      extend(topic) {
-        topic.extended = !topic.extended
+      onTopicClick(topic) {
+        this.$router.push('topic/' + topic.id)
       },
       toggleRateUp(sentence) {
         sentence.rating = sentence.rating === 1 ? 0 : 1
