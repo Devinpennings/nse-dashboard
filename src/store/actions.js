@@ -1,6 +1,8 @@
 // Institutes
 export const FETCH_INSTITUTES = 'Fetch institutes';
 export const FETCH_INSTITUTE_LOCATION = 'Fetch institute locations';
+export const ADD_SELECTED_DISCIPLINE = 'Add selected discipline';
+export const REMOVE_SELECTED_DISCIPLINE = 'Remove selected discipline';
 
 // Locations
 export const FETCH_LOCATIONS = 'Fetch locations';

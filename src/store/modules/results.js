@@ -1,14 +1,12 @@
-import {ADD_SELECTED_DISCIPLINE, GET_DISCIPLINE_BY_INSTITUTE, REMOVE_SELECTED_DISCIPLINE} from "../actions";
 import {RepositoryFactory} from "../../repository/repositoryFactory";
 
 const state = {
   all: [],
-  selected: []
 };
 
 const actions = {
 
-  [GET_DISCIPLINE_BY_INSTITUTE] ({_dispatch, _commit}, institute) {
+  [CREATE_RESULT_REQUEST] ({_dispatch, _commit}, result) {
 
     return new Promise((resolve, reject) => {
 
@@ -46,12 +44,6 @@ const mutations = {
       ...state.selected,
       !state.selected.some(d => d.disciplineId === discipline.disciplineId) && discipline
     ];
-  },
-
-  [REMOVE_SELECTED_DISCIPLINE](state, discipline) {
-    const item = state.selected.find(d => d.disciplineId === discipline.disciplineId);
-    const i = state.selected.indexOf(item);
-    state.selected.splice(i, 1);
   },
 };
 

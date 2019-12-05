@@ -1,7 +1,9 @@
 <template>
   <sui-grid
-    class="center-container"
+    class="main"
+    centered
   >
+    <sui-grid-column :width="12" v-if="!processingStatus">
       <sui-grid class="content">
         <sui-grid-column v-if="loading" id="loader">
           <sui-loader active indeterminate centered inline>{{loadingMessage}}</sui-loader>
@@ -13,6 +15,7 @@
               icon="building"
               title="Selecteer een instituut"
               display-field="name"
+              key-field="instituteId"
               allow-search
               v-on:selectChange="onInstituteSelectedChange($event)"
             />
@@ -31,33 +34,63 @@
             />
           </sui-grid-column>
           <sui-grid-column id="disciplines" :width="7" v-if="disciplines && disciplines.length > 0">
-            <SelectableList
+            <discipline-list
               :items="disciplines"
               icon="graduation cap"
               title="Selecteer een opleiding"
               display-field="name"
-              allow-search
               allow-multi-select
               allow-select-all
               disable-bottom
+              key-field="disciplineId"
+              v-on:selectChange="onSelectedDisciplineChanged"
             />
           </sui-grid-column>
         </sui-grid-row>
       </sui-grid>
+
+    </sui-grid-column>
+
+    <sui-grid-column :width="4" v-if="!processingStatus">
+      <selected-discipline-list
+        class="content"
+        :items="selectedDisciplines"
+        title="Geselecteerde opleidingen"
+        display-field="name"
+        key-field="disciplineId"
+        allow-submit
+        v-on:remove="onSelectedDisciplineChanged"
+      />
+    </sui-grid-column>
+
+    <sui-progress class="fullwidth" :percent="processingStatus.value" :label="processingStatus.text" />
+
   </sui-grid>
 </template>
 
 <script>
   import Map from "../components/location/Map";
-  import {mapActions, mapMutations} from "vuex";
-  import {FETCH_INSTITUTES, GET_DISCIPLINE_BY_INSTITUTE, SET_SELECTED_INSTITUTES} from "../store/actions";
+  import {mapActions, mapMutations, mapState} from "vuex";
+  import {
+    FETCH_INSTITUTES,
+    GET_DISCIPLINE_BY_INSTITUTE,
+    SET_SELECTED_INSTITUTES
+  } from "../store/actions";
   import SelectableList from "../components/location/SelectableList";
+  import SelectedDisciplineList from "../components/location/SelectedDisciplineList";
+  import DisciplineList from "../components/location/DisciplineList";
 
   export default {
 
     name: "Landing",
 
-    components: {SelectableList, Map },
+    components: {DisciplineList, SelectedDisciplineList, SelectableList, Map },
+
+    computed: {
+      ...mapState('disciplines', {
+        selectedDisciplines: state => state.selected,
+      }),
+    },
 
     methods: {
 
@@ -82,22 +115,40 @@
       },
 
       onLocationSelectedChanged(location) {
-        if (location === undefined) {
+        if (location.item === undefined) {
           this.selectedLocation = {
             institutes: this.locations.map((l) => l.institutes).flat()
           }
         } else {
-          this.selectedLocation = location
+          this.selectedLocation = location.item
         }
 
       },
 
       onInstituteSelectedChange(institute) {
 
-        this.selectedInstitute = institute;
-        this.getDisciplinesByInstitute(institute.instituteId).then((result) => {
-          this.disciplines = result;
-        })
+        if (!institute.deselect) {
+          this.selectedInstitute = institute.item;
+          this.getDisciplinesByInstitute(institute.item).then((result) => {
+            this.disciplines = result;
+          })
+        } else {
+          this.selectedInstitute = undefined;
+          this.disciplines = []
+        }
+
+      },
+
+      onSelectedDisciplineChanged(discipline) {
+
+        // if (discipline.deselect) {
+        //   this.setSelectedDisciplines(this.selectedDisciplines.filter(i => i.disciplineId !== discipline.item.disciplineId))
+        // } else {
+        //   this.setSelectedDisciplines([
+        //     ...this.selectedDisciplines,
+        //     !this.selectedDisciplines.some(i => discipline.item.disciplineId === i.disciplineId) && discipline.item
+        //   ])
+        // }
 
       }
 
@@ -111,7 +162,7 @@
         selectedInstitute: null,
         loading: true,
         loadingMessage: "Gegevens ophalen...",
-        disciplines: []
+        disciplines: [],
       }
     },
 
@@ -152,6 +203,11 @@
     height: 600px;
     padding: 0 !important;
     overflow: hidden;
+  }
+
+  .main {
+    width: 100% !important;
+    margin: 0 6vw !important;;
   }
 
   #loader {

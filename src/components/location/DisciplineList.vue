@@ -1,108 +1,164 @@
 <template>
   <div class="center-container" id="content">
     <sui-grid centered class="fullwidth">
-      <sui-grid-row id="icon">
-        <sui-icon name="building" size="big"/>
-      </sui-grid-row>
       <sui-grid-row id="title">
-        <h2>Selecteer een instituut</h2>
+        <div id="icon">
+          <sui-icon :name="icon" size="big"/>
+        </div>
+        <h2>{{title}}</h2>
       </sui-grid-row>
       <sui-grid-row id="content-list">
-        <div id="search">
-          <sui-input v-model="searchInput" v-on:input="onSearchChanged" style="width: 100%" placeholder="Zoeken..." icon="search" />
-          <div id="select-all" v-on:click="onSelectAll">
+        <div id="search" v-if="allowSearch || allowSelectAll">
+          <sui-input v-if="allowSearch" v-model="searchInput" v-on:input="onSearchChanged" style="width: 100%" placeholder="Zoeken..." icon="search" />
+          <div v-if="allowSelectAll" id="select-all" v-on:click="onSelectAll">
             {{ shouldSelectAll ? 'Selecteer alles' : 'Deselecteer alles'}}
           </div>
         </div>
         <ul>
           <li
-            v-for="institute in sortedInstitutes"
-            v-bind:key="institute.instituteId"
-            v-on:click="onSelectChange(institute)"
-            v-bind:class="{ selected: selected && selected.instituteId === institute.instituteId }"
+            v-for="item in sorted"
+            v-bind:key="item[keyField]"
+            v-on:click="onSelectChange(item)"
           >
-            {{ institute.name }} <sui-icon v-if="selectedInstitutes.includes(institute)" style="color: #623264" name="check" />
+            {{ item[displayField] }} <sui-icon v-if="isSelected(item)" style="color: #623264" name="check" />
           </li>
-          <li id="empty" v-if="sortedInstitutes.length < 1">
-            Er zijn geen instituten gevonden.
+          <li id="empty" v-if="filtered.length < 1">
+            Geen resultaten.
           </li>
         </ul>
       </sui-grid-row>
-      <sui-grid-row id="bottom">
-        <div id="selected-count">
-          {{ this.selectedInstitutes.length > 0 ? this.selectedInstitutes.length : 'Geen ' }} item{{this.selectedInstitutes.length === 1 ? '' : 's'}}
+      <sui-grid-row id="bottom" v-if="(allowMultiSelect || allowSubmit) && !disableBottom">
+        <div id="selected-count" v-if="allowMultiSelect">
+          {{ this.selected.length > 0 ? this.selected.length : 'Geen ' }} item{{this.selected.length === 1 ? '' : 's'}}
         </div>
-        <sui-button v-on:click="onSelectSubmit" v-bind:class="{ disabled: selectedInstitutes.length < 1 }" content="Bevestigen" size="small" icon="angle right" label-position="right" />
+        <sui-button v-if="allowSubmit" v-on:click="onSelectSubmit" v-bind:class="{ disabled: selected.length < 1 }" content="Bevestigen" size="small" icon="angle right" label-position="right" />
       </sui-grid-row>
     </sui-grid>
   </div>
 </template>
 
 <script>
+  import {mapActions, mapMutations, mapState} from "vuex";
+  import {ADD_SELECTED_DISCIPLINE, REMOVE_SELECTED_DISCIPLINE, SET_SELECTED_DISCIPLINES} from "../../store/actions";
+
   export default {
 
-    name: "InstituteList",
-    props: ['institutes'],
-    events: ['selectChange', 'selectSubmit'],
+    name: "DisciplineList",
+    props: {
+      icon: String,
+      title: String,
+      allowSearch: Boolean,
+      allowSelectAll: Boolean,
+      allowMultiSelect: {
+        type: Boolean,
+        default() {
+          return this.allowSelectAll
+        }
+      },
+      allowSubmit: Boolean,
+      displayField: {
+        type: String,
+        default: 'value'
+      },
+      keyField: {
+        type: String,
+        default() {
+          return this.displayField
+        }
+      },
+      items: {
+        type: Array,
+        default() { return [] }
+      },
+      disableBottom: {
+        type: Boolean,
+        default() { return false; }
+      }
+    },
+    events: [
+      'selectChange',
+      'selectSubmit'
+    ],
 
     data() {
       return {
-        selected: null,
-        filteredInstitutes: [],
-        searchInput: "",
-        selectedInstitutes: []
+        filtered: [],
+        searchInput: ""
       }
     },
 
     computed: {
 
-      sortedInstitutes() {
-        return [...this.filteredInstitutes].sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+      ...mapState('disciplines', {
+        selected: state => state.selected
+      }),
+
+      sorted() {
+        return [...this.filtered].sort((a,b) => (a[this.displayField] > b[this.displayField]) ? 1 : ((b[this.displayField] > a[this.displayField]) ? -1 : 0));
       },
 
       shouldSelectAll() {
-        return !this.filteredInstitutes.every((i) => this.selectedInstitutes.includes(i));
+        return !this.sorted.every((i) => this.isSelected(i));
       }
 
     },
 
     methods: {
 
+      ...mapMutations('disciplines', {
+        addSelected: ADD_SELECTED_DISCIPLINE,
+        removeSelected: REMOVE_SELECTED_DISCIPLINE
+      }),
+
       onSearchChanged() {
         setTimeout(() => {
-          this.filteredInstitutes = [...this.institutes].filter((i) => i.title.toLowerCase().includes(this.searchInput.toLowerCase()));
+          this.filtered = [...this.items].filter((i) => i[this.displayField].toLowerCase().includes(this.searchInput.toLowerCase()));
         }, 200);
       },
 
-      resetInstitutes() {
-        this.filteredInstitutes = this.institutes;
+      reset() {
+        this.filtered = this.items;
         this.searchInput = "";
       },
 
-      onSelectChange(institute) {
-
-        if (this.selectedInstitutes.includes(institute)) {
-          this.selectedInstitutes = this.selectedInstitutes.filter(item => item !== institute)
+      onSelectChange(item) {
+        if (this.selected.some(i => i.disciplineId === item.disciplineId)) {
+          this.removeSelected(item);
         } else {
-          this.selectedInstitutes.push(institute)
+          this.addSelected(item);
+          // this.setSelected([
+          //   ...this.selected,
+          //   item
+          // ])
+          // this.$emit('selectChange', {
+          //   item,
+          //   deselect: false
+          // });
         }
-
       },
 
       onSelectSubmit() {
-        this.$emit('selectSubmit', this.selectedInstitutes);
+        this.$emit('selectSubmit', this.selected);
+      },
+
+      isSelected(item) {
+        return this.selected.some(i => i[this.keyField] === item[this.keyField])
       },
 
       onSelectAll() {
 
         if (this.shouldSelectAll) {
-          this.filteredInstitutes.forEach((i) => {
-            if (!this.selectedInstitutes.includes(i)) {
-              this.selectedInstitutes.push(i);
+          this.filtered.forEach((item) => {
+            if (!this.isSelected(item)) {
+              this.addSelected(item)
             }
           });
         } else {
-          this.selectedInstitutes = this.selectedInstitutes.filter((i) => !this.filteredInstitutes.includes(i))
+          this.filtered.forEach((item) => {
+            if (this.isSelected(item)) {
+              this.removeSelected(item)
+            }
+          })
         }
 
       }
@@ -110,12 +166,12 @@
     },
 
     beforeMount() {
-      this.resetInstitutes();
+      this.reset();
     },
 
     watch: {
-      institutes() {
-        this.resetInstitutes();
+      items() {
+        this.reset();
       }
     }
 
@@ -125,7 +181,7 @@
 <style scoped>
 
   #content {
-    background: #ffffff;
+    background: #f9f9f9;
     padding-top: 24px !important;
   }
 
@@ -134,8 +190,16 @@
   }
 
   #icon {
-    padding-bottom: 6px !important;
     color: #623264;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: auto;
+    flex: 1 1 auto;
+  }
+
+  h2 {
+    margin: 0 !important;
   }
 
   ul {
@@ -160,7 +224,7 @@
     background: transparent !important;
     margin-right: 12px;
     margin-left: 12px;
-    margin-bottom: 12px;
+    /*margin-bottom: 12px;*/
   }
 
   #select-all {

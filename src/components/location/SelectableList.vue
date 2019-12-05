@@ -20,7 +20,7 @@
             v-bind:key="item[keyField]"
             v-on:click="onSelectChange(item)"
           >
-            {{ item[displayField] }} <sui-icon v-if="selected.includes(item)" style="color: #623264" name="check" />
+            {{ item[displayField] }} <sui-icon v-if="isSelected(item)" style="color: #623264" name="check" />
           </li>
           <li id="empty" v-if="filtered.length < 1">
             Geen resultaten.
@@ -79,9 +79,9 @@
 
     data() {
       return {
-        selected: [],
         filtered: [],
         searchInput: "",
+        selected: []
       }
     },
 
@@ -111,32 +111,53 @@
       },
 
       onSelectChange(item) {
-
         if (this.selected.includes(item)) {
-          this.selected = this.selected.filter(i => i !== item)
+          this.selected = this.selected.filter(i => i !== item);
+          this.$emit('selectChange', {
+            item,
+            deselect: true
+          });
         } else {
           if (!this.allowMultiSelect) this.selected = [item];
-          else this.selected.push(item)
+          else this.selected.push(item);
+          this.$emit('selectChange', {
+            item,
+            deselect: false
+          });
         }
-
-        this.$emit('selectChange', item);
-
       },
 
       onSelectSubmit() {
         this.$emit('selectSubmit', this.selected);
       },
 
+      isSelected(item) {
+        return this.selected.some(i => i[this.keyField] === item[this.keyField])
+      },
+
       onSelectAll() {
 
         if (this.shouldSelectAll) {
-          this.filtered.forEach((i) => {
-            if (!this.selected.includes(i)) {
-              this.selected.push(i);
+          this.filtered.forEach((item) => {
+            if (!this.selected.includes(item)) {
+              this.selected.push(item);
+              this.$emit('selectChange', {
+                item,
+                deselect: false
+              });
             }
           });
         } else {
-          this.selected = this.selected.filter((i) => !this.filtered.includes(i))
+          this.selected = this.selected.filter((item) => {
+            if (this.filtered.includes(item)) {
+              this.$emit('selectChange', {
+                item,
+                deselect: true
+              });
+              return false
+            }
+            return true
+          })
         }
 
       }
