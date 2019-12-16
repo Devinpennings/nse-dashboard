@@ -1,7 +1,7 @@
 import Repository from "../repository";
 import * as axios from "axios";
 
-const resource = "/institutes";
+const resource = "/institute";
 
 export default {
 

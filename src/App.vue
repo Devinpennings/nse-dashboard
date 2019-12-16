@@ -3,11 +3,14 @@
     <sui-grid class="fullHeight">
 
       <sui-grid-column id="main-top" v-if="showMenu" :width="3">
-        <sui-grid-row class="title">
+        <sui-grid-row class="title header">
           <div class="item">Nationale</div>
           <div class="item">Studenten</div>
           <div class="item">Enquete</div>
-          <sui-input transparent class="fullwidth search" placeholder="Zoek naar onderwerp..." icon="search" icon-position="left"/>
+
+          <div id="search">
+            <sui-input  transparent class="fullwidth search" placeholder="Zoek naar onderwerp..." icon="search" icon-position="left"/>
+          </div>
         </sui-grid-row>
 
         <sui-grid-row id="navigation">
@@ -43,6 +46,7 @@
 </template>
 
 <script>
+
   export default {
 
     name: 'app',
@@ -53,10 +57,12 @@
     },
 
     methods: {
+
       onBackButtonClick() {
         this.$router.push('/');
-      }
-    }
+      },
+
+    },
 
   }
 </script>
@@ -127,17 +133,29 @@
 
   #main-top {
     background-color: #ffffff;
-    -webkit-box-shadow: 0 8px 6px -6px rgba(181,181,181,1);
-    -moz-box-shadow: 0 8px 6px -6px rgba(181,181,181,1);
-    box-shadow: 0 8px 6px -6px rgba(181,181,181,1);
     font-size: 18px;
     color: #585858;
     z-index: 100;
     min-height: 100%;
-    padding: 24px !important;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
+    padding: 0 !important;
+  }
+
+  #main-top .header {
+    /*background-color: #623264;*/
+    /*color: white !important;*/
+    margin: 0;
+  }
+
+  #main-top > * {
+    padding: 32px 14px !important;
+  }
+
+  #main-top #search  {
+    padding: 0 !important;
+    align-content: stretch;
   }
 
   #main-top img {
@@ -163,6 +181,10 @@
     transform: scale(1.1) !important;
   }
 
+  #navigation .active:hover {
+    transform: scale(1.2) !important;
+  }
+
   #navigation .item:hover {
     transform: scale(1.1);
   }
@@ -173,6 +195,15 @@
 
   .search {
     font-size: 14px !important;
+    opacity: 100% !important;
+  }
+
+  .search:focus, .search>input:focus {
+    /*color: white !important;*/
+  }
+
+  .search>input::placeholder {
+    /*color: rgba(255, 255, 255, 0.6) !important;*/
   }
 
   ::-webkit-scrollbar {

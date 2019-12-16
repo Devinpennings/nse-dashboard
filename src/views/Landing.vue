@@ -1,56 +1,106 @@
 <template>
   <sui-grid
-    class="center-container"
+    class="main"
+    centered
   >
+    <sui-grid-column :width="12">
       <sui-grid class="content">
         <sui-grid-column v-if="loading" id="loader">
           <sui-loader active indeterminate centered inline>{{loadingMessage}}</sui-loader>
         </sui-grid-column>
         <sui-grid-row v-if="!loading">
           <sui-grid-column :width="9">
-            <institute-list
-              :institutes="institutes"
-              v-on:selectSubmit="onInstituteSelectedSubmitted"
+            <selectable-list
+              :items="institutes"
+              icon="building"
+              title="Selecteer een instituut"
+              display-field="name"
+              key-field="instituteId"
+              allow-search
+              v-on:selectChange="onInstituteSelectedChange($event)"
             />
           </sui-grid-column>
-          <sui-grid-column id="logo" :width="7" v-if="!selectedLocation">
+          <sui-grid-column id="logo" :width="7" v-if="!selectedInstitute">
             <img src="../../public/assets/logo-inverted.png">
             <p>
               Nationale Studenten Enquete
             </p>
           </sui-grid-column>
-          <sui-grid-column id="map" :width="7" v-if="selectedLocation">
+          <sui-grid-column id="map" :width="7" v-if="false">
             <Map
               :locations="hoveredLocations"
               v-on:hoverChange="onLocationHoveredChanged"
               v-on:selectChange="onLocationSelectedChanged"
             />
           </sui-grid-column>
-          <sui-grid-column id="institutes" :width="7" v-if="selectedLocation">
-            <LocationList
-              :locations="locations"
-              :hovered="hoveredLocations"
-              v-on:hoverChange="onLocationHoveredChanged"
-              v-on:selectChange="onLocationSelectedChanged"
+          <sui-grid-column id="disciplines" :width="7" v-if="disciplines && disciplines.length > 0">
+            <discipline-list
+              :items="disciplines"
+              icon="graduation cap"
+              title="Selecteer een opleiding"
+              display-field="name"
+              allow-multi-select
+              allow-select-all
+              disable-bottom
+              key-field="disciplineId"
             />
           </sui-grid-column>
         </sui-grid-row>
       </sui-grid>
+    </sui-grid-column>
+
+    <sui-grid-column :width="4">
+      <selected-discipline-list
+        class="content"
+        :items="selectedDisciplines"
+        title="Geselecteerde opleidingen"
+        display-field="name"
+        key-field="disciplineId"
+        allow-submit
+        :loading="submitting"
+        v-on:submit="onSubmit"
+      />
+    </sui-grid-column>
+
+    <sui-grid-row id="below" v-if="results.length > 0">
+      <ResultsOverview class="content"/>
+    </sui-grid-row>
+
   </sui-grid>
 </template>
 
 <script>
   import Map from "../components/location/Map";
-  import {mapActions, mapMutations} from "vuex";
-  import {FETCH_INSTITUTES, SET_SELECTED_INSTITUTES} from "../store/actions";
-  import LocationList from "../components/location/LocationList";
-  import InstituteList from "../components/location/InstituteList";
+  import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+  import {
+    CREATE_RESULT_REQUEST,
+    FETCH_INSTITUTES,
+    GET_DISCIPLINE_BY_INSTITUTE,
+    SET_SELECTED_INSTITUTES
+  } from "../store/actions";
+  import SelectableList from "../components/location/SelectableList";
+  import SelectedDisciplineList from "../components/location/SelectedDisciplineList";
+  import DisciplineList from "../components/location/DisciplineList";
+  import ResultsOverview from "../components/location/ResultsOverview";
 
   export default {
 
     name: "Landing",
+    components: {ResultsOverview, DisciplineList, SelectedDisciplineList, SelectableList, Map },
 
-    components: { InstituteList, LocationList, Map },
+    computed: {
+      ...mapState('disciplines', {
+        selectedDisciplines: state => state.selected,
+      }),
+
+      ...mapGetters('dashboard', {
+        selectedYears: 'selectedYears'
+      }),
+
+      ...mapState('results', {
+        results: 'all'
+      })
+    },
 
     methods: {
 
@@ -58,8 +108,16 @@
         getInstitutes: FETCH_INSTITUTES
       }),
 
+      ...mapActions('disciplines', {
+        getDisciplinesByInstitute: GET_DISCIPLINE_BY_INSTITUTE
+      }),
+
       ...mapMutations('dashboard', {
         setSelectedInstitutes: SET_SELECTED_INSTITUTES
+      }),
+
+      ...mapActions('results', {
+        createResultRequest: CREATE_RESULT_REQUEST
       }),
 
       onLocationHoveredChanged(location) {
@@ -71,26 +129,42 @@
       },
 
       onLocationSelectedChanged(location) {
-        if (location === undefined) {
+        if (location.item === undefined) {
           this.selectedLocation = {
             institutes: this.locations.map((l) => l.institutes).flat()
           }
         } else {
-          this.selectedLocation = location
+          this.selectedLocation = location.item
         }
 
       },
 
-      onInstituteSelectedSubmitted(institutes) {
+      onInstituteSelectedChange(institute) {
 
-        this.loadingMessage = `Gegevens voor ${institutes.length > 1 ? 'de instituten' : institutes[0].title} aan het verzamelen...`;
-        this.loading = true;
+        if (!institute.deselect) {
+          this.selectedInstitute = institute.item;
+          this.getDisciplinesByInstitute(institute.item).then((result) => {
+            this.disciplines = result;
+          })
+        } else {
+          this.selectedInstitute = undefined;
+          this.disciplines = []
+        }
 
-        this.setSelectedInstitutes(institutes);
+      },
 
-        setTimeout(() => {
-          this.$router.push('/dashboard');
-        }, 3000)
+      onSubmit() {
+
+        this.submitting = true;
+        this.createResultRequest({
+          type: 'TOPIC',
+          years: this.selectedYears,
+          disciplines: this.selectedDisciplines})
+        .then(() => {
+          this.submitting = false;
+        }).catch(() => {
+          this.submitting = false;
+        });
 
       }
 
@@ -101,9 +175,11 @@
         institutes: [],
         locations: [],
         hoveredLocations: [],
-        selectedLocation: null,
-        loading: true,
-        loadingMessage: "Gegevens ophalen..."
+        selectedInstitute: null,
+        loading: false,
+        submitting: false,
+        loadingMessage: "Gegevens ophalen...",
+        disciplines: [],
       }
     },
 
@@ -136,14 +212,19 @@
 
   .content {
     background: #ffffff;
-    -webkit-box-shadow: 5px 7px 13px 0px rgba(181,181,181,1);
-    -moz-box-shadow: 5px 7px 13px 0px rgba(181,181,181,1);
-    box-shadow: 5px 7px 13px 0px rgba(181,181,181,1);
+    -webkit-box-shadow: 5px 7px 13px 0 rgba(181,181,181,1);
+    -moz-box-shadow: 5px 7px 13px 0 rgba(181,181,181,1);
+    box-shadow: 5px 7px 13px 0 rgba(181,181,181,1);
     border-radius: 6px;
     width: 1200px;
     height: 600px;
     padding: 0 !important;
     overflow: hidden;
+  }
+
+  .main {
+    width: 100% !important;
+    margin: 0 6vw !important;;
   }
 
   #loader {
@@ -184,7 +265,11 @@
   }
 
   .row {
-    padding: 0 !important;
+    padding: 0!important;
+  }
+
+  #below {
+    padding-top: 32px !important;
   }
 
 </style>

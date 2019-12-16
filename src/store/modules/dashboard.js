@@ -2,9 +2,9 @@ import {SET_AVAILABLE_YEARS, SET_END_YEAR, SET_SELECTED_INSTITUTES, SET_START_YE
 
 const state = {
   selectedInstitutes: [],
-  startYear: undefined,
-  endYear: undefined,
-  availableYears: [2012, 2013, 2014, 2015, 2016]
+  startYear: 2012,
+  endYear: 2018,
+  availableYears: [2012, 2013, 2014, 2015, 2016, 2017, 2018],
 };
 
 const mutations = {
@@ -29,8 +29,15 @@ const mutations = {
 
 };
 
+const getters = {
+  selectedYears: state => {
+    return state.availableYears.slice(state.availableYears.indexOf(state.startYear), state.availableYears.indexOf(state.endYear) + 1);
+  }
+};
+
 export default {
   namespaced: true,
   state,
+  getters,
   mutations
 }

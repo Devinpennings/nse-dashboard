@@ -1,6 +1,6 @@
 import Repository from "../repository";
 
-const resource = "/topic";
+const resource = "/discipline";
 
 export default {
 
@@ -10,6 +10,10 @@ export default {
 
   get(id) {
     return Repository.get(`${resource}/${id}`);
+  },
+
+  getByInstitute(instituteId) {
+    return Repository.get(`${resource}/byinstitute/${instituteId}`);
   },
 
 };

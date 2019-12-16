@@ -17,11 +17,11 @@
         <ul>
           <li
             v-for="institute in sortedInstitutes"
-            v-bind:key="institute.id"
+            v-bind:key="institute.instituteId"
             v-on:click="onSelectChange(institute)"
-            v-bind:class="{ selected: selected && selected.id === institute.id }"
+            v-bind:class="{ selected: selected && selected.instituteId === institute.instituteId }"
           >
-            {{ institute.title }} <sui-icon v-if="selectedInstitutes.includes(institute)" style="color: #623264" name="check" />
+            {{ institute.name }} <sui-icon v-if="selectedInstitutes.includes(institute)" style="color: #623264" name="check" />
           </li>
           <li id="empty" v-if="sortedInstitutes.length < 1">
             Er zijn geen instituten gevonden.
@@ -57,7 +57,7 @@
     computed: {
 
       sortedInstitutes() {
-        return [...this.filteredInstitutes].sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+        return [...this.filteredInstitutes].sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
       },
 
       shouldSelectAll() {

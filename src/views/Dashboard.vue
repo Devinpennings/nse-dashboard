@@ -2,73 +2,43 @@
   <div id="main">
     <sui-grid id="center">
 
-<!--        <sui-grid-row class="title" vertical-align="middle">-->
-<!--          <sui-grid-column class="tab active">-->
-<!--            Algemeen-->
-<!--          </sui-grid-column>-->
-<!--          <sui-grid-column class="tab">-->
-<!--            Onderwerpen-->
-<!--          </sui-grid-column>-->
-<!--          <sui-grid-column class="tab">-->
-<!--            Sentiment-->
-<!--          </sui-grid-column>-->
-<!--          <sui-grid-column floated="right" text-align="right" :width="4">-->
-<!--            <sui-dropdown-->
-<!--              floating-->
-<!--              :icon="null"-->
-<!--              :options="availableYears"-->
-<!--              v-model="startYear"-->
-<!--              class="year"-->
-<!--            />-->
-<!--            - -->
-<!--            <sui-dropdown-->
-<!--              floating-->
-<!--              :icon="null"-->
-<!--              :options="availableYears"-->
-<!--              v-model="endYear"-->
-<!--              class="year"-->
-<!--            />-->
-<!--          </sui-grid-column>-->
-<!--        </sui-grid-row>-->
-
-        <sui-grid id="content" columns="equal">
+        <sui-grid id="content" columns="equal" v-if="!loading">
 
           <DashboardPanel title="Meest besproken onderwerpen" description="Hier worden de meest besproken onderwerpen weergegeven." :width="10" :padded="false">
             <template v-slot:icon>
               <sui-icon style="color: #EF5B70" name="fire"/>
             </template>
-            <TrendingTopicsList></TrendingTopicsList>
+            <TrendingTopicsList/>
           </DashboardPanel>
 
           <DashboardPanel title="Aantal inzendingen" description="Hier worden de hoeveelheid inzendingen op de open vraag weergegeven." :width=6>
             <template v-slot:icon>
               <sui-icon style="color: #4D8EEA" name="paper plane"/>
             </template>
-            <SubmissionCountChart></SubmissionCountChart>
+            <SubmissionCountChart/>
           </DashboardPanel>
 
           <DashboardPanel title="Trends" :width="16">
             <template v-slot:icon>
               <sui-icon style="color: #59D6AF" name="chart line" />
             </template>
-            <TrendChart></TrendChart>
+            <TrendChart/>
           </DashboardPanel>
 
         </sui-grid>
 
     </sui-grid>
-
   </div>
 </template>
 
 <script>
 
-  import {FETCH_TOPICS, SET_END_YEAR, SET_START_YEAR} from "../store/actions";
-  import {mapActions, mapMutations} from "vuex";
   import DashboardPanel from "../components/dashboard/DashboardPanel";
   import TrendingTopicsList from "../components/dashboard/general/charts/TrendingTopicsList";
   import SubmissionCountChart from "../components/dashboard/general/charts/SubmissionCountChart";
   import TrendChart from "../components/dashboard/general/charts/TrendChart";
+  import {mapActions, mapMutations} from "vuex";
+  import {GET_SINGLE_RESULT, SET_SELECTED_RESULT} from "../store/actions";
 
   export default {
 
@@ -79,65 +49,27 @@
 
     data() {
       return {
-        loading: false,
-        topicResults: [],
+        loading: false
       }
     },
 
-    computed: {
-
-      startYear: {
-        get() {
-          return this.$store.state.dashboard.startYear;
-        },
-        set(newValue) {
-          return this.setStartYear(newValue)
-        }
-      },
-      endYear: {
-        get() {
-          return this.$store.state.dashboard.endYear;
-        },
-        set(newValue) {
-          return this.setEndYear(newValue)
-        }
-      },
-      availableYears() {
-        return this.$store.state.dashboard.availableYears.map(this.yearToSelect)
-      }
-
+    beforeMount() {
+      this.loading = true;
+      this.getResult(this.$route.query.result).then((result) => {
+        this.setSelectedResult(result);
+        this.loading = false;
+      })
     },
 
     methods: {
 
-      ...mapActions('topics', {
-        getTopics: FETCH_TOPICS,
+      ...mapMutations('results', {
+        setSelectedResult: SET_SELECTED_RESULT
       }),
-
-      ...mapMutations('dashboard', {
-        setStartYear: SET_START_YEAR,
-        setEndYear: SET_END_YEAR
+      ...mapActions('results', {
+        getResult: GET_SINGLE_RESULT
       }),
-
-      yearToSelect(year) {
-        if (!year) return undefined;
-        return { text: year.toString(), value: year}
-      }
-
     },
-
-    beforeMount() {
-
-      this.getTopics()
-        .then((result) => {
-          setTimeout(() => {
-            this.topicResults = result;
-            this.loading = false;
-          }, 1000)
-        });
-
-    },
-
   }
 
 </script>

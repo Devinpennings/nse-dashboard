@@ -3,6 +3,7 @@ import {RepositoryFactory} from "../../repository/repositoryFactory";
 
 const state = {
   all: [],
+  selected: undefined
 };
 
 const actions = {
@@ -17,10 +18,11 @@ const actions = {
         .then((result) => {
 
           const all = result.data.map((institute) => {
-            if (institute.latt && institute.longt) {
-              return institute;
-            }
-            return dispatch(FETCH_INSTITUTE_LOCATION, institute);
+            return institute;
+            // if (institute.latt && institute.longt) {
+            //   return institute;
+            // }
+            // return dispatch(FETCH_INSTITUTE_LOCATION, institute);
           });
 
           Promise.all(all)
@@ -63,6 +65,10 @@ const actions = {
 const mutations = {
   setInstitutes(state, institutes) {
     state.all = institutes
+  },
+
+  setSelected(state, institute) {
+    state.selected = institute;
   }
 };
 
