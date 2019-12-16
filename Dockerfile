@@ -10,7 +10,10 @@ RUN npm install
 
 COPY . .
 
+ARG API_URL
+ENV API_URL $API_URL
+
 RUN npm run build
 
-EXPOSE 8080
+EXPOSE 80
 CMD [ "http-server", "dist" ]
