@@ -18,4 +18,13 @@ export const GET_TOPIC = 'Get topic';
 export const SET_SELECTED_INSTITUTES = 'Set selected institutes';
 export const SET_START_YEAR = 'Set start year';
 export const SET_END_YEAR = 'Set end year';
-export const SET_AVAILABLE_YEARS = 'Set available years';
+export const SET_AVAILABLE_YEARS = 'Set available years.';
+
+// Results
+export const ADD_RESULT_REQUEST = 'Add a request.';
+export const CREATE_RESULT_REQUEST = 'Request a result.';
+export const FETCH_REQUEST_STATUS = 'Fetch request status.';
+export const FETCH_INCOMPLETE_REQUESTS = 'Fetch incomplete requests';
+export const UPDATE_RESULT_REQUEST = 'Update result request.';
+export const SET_SELECTED_RESULT = 'Set selected result';
+export const GET_SINGLE_RESULT = 'Get single result';

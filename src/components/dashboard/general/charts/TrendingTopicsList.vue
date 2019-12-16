@@ -1,88 +1,39 @@
 <template>
   <div class="fullHeight wrapper">
-    <div v-for="topic in topics" v-bind:key="topic.name" class="list-item-outer">
+    <div v-for="topic in result.topics.slice(0, 5)" v-bind:key="topic.name" class="list-item-outer">
       <div class="list-item" v-on:mousedown="onTopicClick(topic)">
         <div class="comment-count">
-          <sui-icon name="comment outline"></sui-icon>
-          {{topic.commentCount}}
+          <sui-icon name="comment outline"/>
+          {{topic.contributedSentences.length}}
         </div>
         {{topic.value}}
-        <sui-icon class="extender" name="angle right"></sui-icon>
+        <sui-icon class="extender" name="angle right"/>
       </div>
     </div>
     <div class="list-item-last">
-      Alle onderwerpen <sui-icon name="angle right"></sui-icon>
+      Alle onderwerpen
+      <sui-icon name="angle right"/>
     </div>
   </div>
 </template>
 
 <script>
   import {FETCH_TOPICS} from "../../../../store/actions";
-  import {mapActions} from "vuex";
+  import {mapActions, mapState} from "vuex";
 
   export default {
     name: "TrendingTopicsList",
-    data() {
-      return {
-        topics: []
-        // topics: [
-        //   {
-        //     name: 'docent, feedback, geven, kwaliteit, groot, beoordeling, goed, beoordelen, verschil, manier\n',
-        //     commentCount: 201,
-        //     extended: false,
-        //     sentences: [
-        //       {
-        //         value: 'het is jammer dat er veel verschil is tussen docenten binnen dezelfde leereenheid door geluk ben ik enorm geïnspireerd geraakt door de docenten die ik trof hierdoor heb ik ook veel geleerd daarentegen kregen medestudenten binnen dezelfde leereenheid inhoudelijk veel minder goed onderwijs deze verschillen komen ook tot uiting bij het geven van feedback en beoordeling er moet bij docenten en studenten eenduidigheid bestaan over de inhoud van de rubric zodat er bij beoordeling sprake is van nuances en geen grote verschillen tussen docenten dit geldt ook voor de kwaliteit van de feedback deze moet gericht zijn op leren van de student en inhoudelijk van goede kwaliteit zijn',
-        //         rating: 0,
-        //         extended: false
-        //       },
-        //       {
-        //         value: 'De klaslokalen hebben te veel ramen.',
-        //         rating: 0,
-        //       },
-        //       {
-        //         value: 'Mijn docent is nooit in het lokaal.',
-        //         rating: 0,
-        //       },
-        //       {
-        //         value: 'De nederlands docent kan niet goed nederlands.',
-        //         rating: 0,
-        //       },
-        //       {
-        //         value: 'De docenten geven echt slecht les in de klas.',
-        //         rating: 0,
-        //       }
-        //     ]
-        //   },
-        //   {
-        //     name: 'Kantine, Broodjes, Koffie, Thee',
-        //     commentCount: 155,
-        //     extended: false,
-        //   },
-        //   {
-        //     name: 'Tentamens, Stilte, Pennen, Potloden, Materiaal',
-        //     commentCount: 65,
-        //     extended: false,
-        //   },
-        //   {
-        //     name: 'Huiswerk, Parkeren, Fietsen',
-        //     commentCount: 24,
-        //     extended: false,
-        //   },
-        //   {
-        //     name: 'Muziek, Oortjes, Geluid, Herrie',
-        //     commentCount: 8,
-        //     extended: false,
-        //   },
-        // ]
-      }
+    computed: {
+      ...mapState('results', {
+        result: 'selected'
+      })
     },
     methods: {
       ...mapActions('topics', {
         getTopics: FETCH_TOPICS,
       }),
       onTopicClick(topic) {
-        this.$router.push('topic/' + topic.id)
+        this.$router.push('/dashboard/topic/' + topic.topicId)
       },
       toggleRateUp(sentence) {
         sentence.rating = sentence.rating === 1 ? 0 : 1
@@ -98,21 +49,21 @@
       }
     },
     beforeMount() {
-      this.getTopics().then((result) => {
-        this.topics = result;
-        this.topics =  this.topics.map((t) => {
-          return {
-            ...t,
-            extended: false,
-            sentences: t.sentences.map((s) => {
-              return {
-                ...s,
-                extended: false
-              }
-            })
-          }
-        });
-      });
+      // this.getTopics().then((result) => {
+      //   this.topics = result;
+      //   this.topics =  this.topics.map((t) => {
+      //     return {
+      //       ...t,
+      //       extended: false,
+      //       sentences: t.sentences.map((s) => {
+      //         return {
+      //           ...s,
+      //           extended: false
+      //         }
+      //       })
+      //     }
+      //   });
+      // });
     }
   }
 </script>

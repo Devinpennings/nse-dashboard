@@ -5,10 +5,17 @@ import locations from "./modules/locations";
 import topics from "./modules/topics";
 import dashboard from "./modules/dashboard";
 import disciplines from "./modules/disciplines";
+import results from "./modules/results";
+import {VuexPersistence} from "vuex-persist";
 
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
+
+const vuexLocal = new VuexPersistence({
+    strictMode: debug,
+    storage: window.localStorage
+});
 
 export default new Vuex.Store({
     modules: {
@@ -16,7 +23,12 @@ export default new Vuex.Store({
         locations,
         topics,
         disciplines,
-        dashboard
+        dashboard,
+        results
     },
     strict: debug,
-})
+    plugins: [vuexLocal.plugin],
+    mutations: {
+        RESTORE_MUTATION: vuexLocal.RESTORE_MUTATION // this mutation **MUST** be named "RESTORE_MUTATION"
+    }
+});

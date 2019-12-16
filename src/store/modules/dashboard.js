@@ -29,8 +29,15 @@ const mutations = {
 
 };
 
+const getters = {
+  selectedYears: state => {
+    return state.availableYears.slice(state.availableYears.indexOf(state.startYear), state.availableYears.indexOf(state.endYear) + 1);
+  }
+};
+
 export default {
   namespaced: true,
   state,
+  getters,
   mutations
 }

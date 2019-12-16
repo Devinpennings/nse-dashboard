@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <sui-card class="fluid" v-for="sentence in topic.sentences" v-bind:key="sentence.value">
+      <sui-card class="fluid" v-for="sentence in topic.contributedSentences" v-bind:key="sentence.value">
         <sui-card-content>
           {{sentence.value}}
         </sui-card-content>
@@ -67,9 +67,6 @@
   #main {
     height: 100%;
     width: 100%;
-    /*margin: 4vh 3vw!important;*/
-    /*margin-top: 0 !important;*/
-    /*margin-bottom: 0 !important;*/
     display: flex;
     flex-direction: column;
   }

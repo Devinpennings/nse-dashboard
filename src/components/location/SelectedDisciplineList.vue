@@ -33,7 +33,7 @@
             van<sui-dropdown v-on:input="startYearChange" :icon="null" direction="upward" class="year-dropdown" :value="startYear" :options="availableYears"/>
             tot<sui-dropdown v-on:input="endYearChange" :icon="null" direction="upward" class="year-dropdown" :value="endYear" :options="availableYears"/>
           </div>
-          <sui-button v-if="allowSubmit" v-on:click="onSelectSubmit" v-bind:class="{ disabled: sorted.length < 1 }" content="Bevestigen" size="small" icon="angle right" label-position="right" />
+          <sui-button v-if="allowSubmit" :loading="loading" v-on:click="onSelectSubmit" v-bind:class="{ disabled: items.length < 1 }" content="Bevestigen" size="small" icon="angle right" label-position="right" />
         </div>
       </sui-grid-row>
     </sui-grid>
@@ -51,6 +51,7 @@
       icon: String,
       title: String,
       allowSubmit: Boolean,
+      loading: Boolean,
       displayField: {
         type: String,
         default: 'value'
@@ -67,7 +68,7 @@
       }
     },
     events: [
-      'selectSubmit'
+      'submit'
     ],
 
     data() {
@@ -137,7 +138,7 @@
       },
 
       onSelectSubmit() {
-        this.$emit('selectSubmit', this.selected);
+        this.$emit('submit', this.selected);
       },
 
       onSelectAll() {

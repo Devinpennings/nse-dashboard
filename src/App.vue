@@ -46,6 +46,7 @@
 </template>
 
 <script>
+
   export default {
 
     name: 'app',
@@ -56,10 +57,12 @@
     },
 
     methods: {
+
       onBackButtonClick() {
         this.$router.push('/');
-      }
-    }
+      },
+
+    },
 
   }
 </script>
@@ -141,8 +144,8 @@
   }
 
   #main-top .header {
-    background-color: #623264;
-    color: white !important;
+    /*background-color: #623264;*/
+    /*color: white !important;*/
     margin: 0;
   }
 
@@ -178,6 +181,10 @@
     transform: scale(1.1) !important;
   }
 
+  #navigation .active:hover {
+    transform: scale(1.2) !important;
+  }
+
   #navigation .item:hover {
     transform: scale(1.1);
   }
@@ -192,11 +199,11 @@
   }
 
   .search:focus, .search>input:focus {
-    color: white !important;
+    /*color: white !important;*/
   }
 
   .search>input::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
+    /*color: rgba(255, 255, 255, 0.6) !important;*/
   }
 
   ::-webkit-scrollbar {
