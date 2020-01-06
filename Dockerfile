@@ -16,4 +16,4 @@ ENV API_URL $API_URL
 RUN npm run build
 
 EXPOSE 80
-CMD [ "http-server", "dist" ]
+CMD [ "http-server", "-p 80", "dist" ]

@@ -1,29 +1,12 @@
-# NSE | Frontend
+# NSE | Vue Frontend
+The frontend is a Vue used to allow end users to get insights in the NSE data. 
 
-## Project setup
-```
-npm install
-```
+## Installation
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Docker is used to setup and run the frontend. To run the application use the following commands:
 
-### Compiles and minifies for production
 ```
-npm run build
+docker build . -t nse-frontend
+docker run nse-frontend
 ```
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
