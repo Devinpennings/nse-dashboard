@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseDomain = `http://9f4124d1.eu.ngrok.io/api/`;
+const baseDomain = process.env.API_URL;
 const baseURL = `${baseDomain}`;
 
 export default axios.create({
