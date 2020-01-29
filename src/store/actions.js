@@ -13,6 +13,7 @@ export const GET_DISCIPLINE_BY_INSTITUTE = 'Get discipline by institute';
 // Topics
 export const FETCH_TOPICS = 'Fetch topics';
 export const GET_TOPIC = 'Get topic';
+export const SEARCH_TOPICS = 'Search topics';
 
 // Dashboard
 export const SET_SELECTED_INSTITUTES = 'Set selected institutes';
@@ -28,3 +29,12 @@ export const FETCH_INCOMPLETE_REQUESTS = 'Fetch incomplete requests';
 export const UPDATE_RESULT_REQUEST = 'Update result request.';
 export const SET_SELECTED_RESULT = 'Set selected result';
 export const GET_SINGLE_RESULT = 'Get single result';
+
+// Metadata
+export const GET_METADATA = 'Get metadata';
+
+// Entry
+export const SEARCH_ENTRIES = 'Search entries';
+
+// Trends
+export const GET_TRENDS = 'Get trends';

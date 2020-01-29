@@ -1,34 +1,29 @@
 <template>
-    <div id="main" v-if="topic">
+    <sui-grid id="main" v-if="topic">
 
-      <div class="header">
-        <div class="title">
-          {{topic.value}}
-        </div>
+      <sui-grid-row class="title" vertical-align="top">
+        {{topic.value}}
+      </sui-grid-row>
+
+      <sui-grid-row style="height: 100%;">
         <div>
-          <sui-checkbox label="Problemen"/>
-          <sui-checkbox label="Oplossingen"/>
-          <sui-checkbox label="Complimenten"/>
+          <sui-card-group :items-per-row="3">
+            <sui-card v-for="sentence in topic.contributedSentences" v-bind:key="sentence.value">
+              <sui-card-content>
+                {{sentence.value}}
+              </sui-card-content>
+              <sui-card-content extra>
+                Positie {{topic.contributedSentences.indexOf(sentence) + 1}}
+                <span slot="right">
+                  <sui-icon name="thumbs up outline"/>
+                  <sui-icon name="thumbs down outline"/>
+                </span>
+              </sui-card-content>
+            </sui-card>
+          </sui-card-group>
         </div>
-      </div>
-
-      <sui-card class="fluid" v-for="sentence in topic.contributedSentences" v-bind:key="sentence.value">
-        <sui-card-content>
-          {{sentence.value}}
-        </sui-card-content>
-        <sui-card-content extra>
-        <span slot="right">
-          <sui-icon name="thumbs up outline"/>
-          <sui-icon name="thumbs down outline"/>
-        </span>
-        </sui-card-content>
-      </sui-card>
-      <div>
-        <sui-button basic>
-          <sui-icon name="chevron down"/>Laad meer opmerkingen
-        </sui-button>
-      </div>
-    </div>
+      </sui-grid-row>
+    </sui-grid>
 </template>
 
 <script>
@@ -52,12 +47,21 @@
     methods: {
       ...mapActions('topics', {
         getSingle: GET_TOPIC
-      })
+      }),
+
+      load() {
+        this.getSingle(this.topicId).then((result) => {
+          this.topic = result
+        })
+      }
+    },
+    watch: {
+      topicId: function (_newVal, _oldVal) {
+        this.load()
+      }
     },
     beforeMount() {
-      this.getSingle(this.topicId).then((result) => {
-        this.topic = result
-      })
+      this.load();
     }
   }
 </script>
@@ -67,20 +71,24 @@
   #main {
     height: 100%;
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    padding: 16px;
   }
 
   #main .button {
     justify-self: center;
   }
 
-  .header {
-    padding-bottom: 64px;
+  .title {
+    font-size: 28px;
+    margin: 6px 0;
   }
 
-  .header .title {
-    font-size: 28px;
+  .options {
+    padding: 0 !important;
+  }
+
+  .fullwidth .card {
+    margin: 0 !important;
   }
 
 </style>

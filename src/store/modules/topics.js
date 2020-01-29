@@ -1,5 +1,5 @@
 import {RepositoryFactory} from "../../repository/repositoryFactory";
-import {FETCH_TOPICS, GET_TOPIC} from "../actions";
+import {FETCH_TOPICS, GET_TOPIC, SEARCH_TOPICS} from "../actions";
 
 const state = {
   all: [],
@@ -51,6 +51,32 @@ const actions = {
     });
 
   },
+
+  [SEARCH_TOPICS] ({dispatch}, {searchQuery, result}) {
+
+    return new Promise((resolve, reject) => {
+
+      const repository = RepositoryFactory.get('topics');
+
+      repository.search(searchQuery, result.topicResultId)
+          .then((result) => {
+
+              const all = result.data.map((result) => {
+                return dispatch(GET_TOPIC, result.topicId);
+              });
+
+              Promise.all(all)
+                  .then((complete) => {
+                    resolve(complete)
+                  });
+
+          })
+          .catch((e) => {
+            reject(e);
+          })
+    });
+
+  }
 
 };
 

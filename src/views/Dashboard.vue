@@ -15,14 +15,14 @@
             <template v-slot:icon>
               <sui-icon style="color: #4D8EEA" name="paper plane"/>
             </template>
-            <SubmissionCountChart/>
+            <SubmissionCountChartContainer/>
           </DashboardPanel>
 
-          <DashboardPanel title="Trends" :width="16">
+          <DashboardPanel title="Trends" :width="16" description="Deze grafiek, die ook is gekoppeld aan de onderwerpmodellen, toont een trendlijn, de trendlijn laat zien hoe de top 5 onderwerpen in de loop der jaren veranderd in rangorder. Hiermee wordt getoond hoe onderwerpen door de jaren heen zijn verbeterd / verslechterd.">
             <template v-slot:icon>
               <sui-icon style="color: #59D6AF" name="chart line" />
             </template>
-            <TrendChart/>
+            <TrendChartContainer/>
           </DashboardPanel>
 
         </sui-grid>
@@ -39,11 +39,15 @@
   import TrendChart from "../components/dashboard/general/charts/TrendChart";
   import {mapActions, mapMutations} from "vuex";
   import {GET_SINGLE_RESULT, SET_SELECTED_RESULT} from "../store/actions";
+  import SubmissionCountChartContainer from "../components/dashboard/general/charts/SubmissionCountChartContainer";
+  import TrendChartContainer from "../components/dashboard/general/charts/TrendChartContainer";
 
   export default {
 
     name: "Dashboard",
     components: {
+      TrendChartContainer,
+        SubmissionCountChartContainer,
       TrendingTopicsList, SubmissionCountChart, DashboardPanel, TrendChart
     },
 

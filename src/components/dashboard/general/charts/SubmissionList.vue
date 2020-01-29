@@ -1,17 +1,17 @@
 <template>
   <div>
-    <div v-for="submission in submissions" v-bind:key="submission.value" class="list-item">
-      <div class="submission">
-        {{submission.value}}
-      </div>
-      <div class="submission-meta">
-        {{submission.institute}}, {{submission.year}}
-      </div>
-    </div>
-    <div class="list-item-last">
-      Alle opmerkingen <sui-icon name="angle right"></sui-icon>
-    </div>
+    <sui-card-group :items-per-row="1">
+      <sui-card v-for="submission in submissions" v-bind:key="submission.value">
+        <sui-card-content>
+          <sui-card-header>Elliot Fu</sui-card-header>
+          <sui-card-meta>Friend</sui-card-meta>
+          <sui-card-description>{{submission.value}}</sui-card-description>
+        </sui-card-content>
+      </sui-card>
+    </sui-card-group>
   </div>
+
+
 </template>
 
 <script>

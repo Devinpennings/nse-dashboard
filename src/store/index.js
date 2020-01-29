@@ -6,6 +6,9 @@ import topics from "./modules/topics";
 import dashboard from "./modules/dashboard";
 import disciplines from "./modules/disciplines";
 import results from "./modules/results";
+import metadata from './modules/metadata';
+import entries from './modules/entries';
+import trends from './modules/trends';
 import {VuexPersistence} from "vuex-persist";
 
 Vue.use(Vuex);
@@ -24,7 +27,10 @@ export default new Vuex.Store({
         topics,
         disciplines,
         dashboard,
-        results
+        results,
+        metadata,
+        entries,
+        trends
     },
     strict: debug,
     plugins: [vuexLocal.plugin],

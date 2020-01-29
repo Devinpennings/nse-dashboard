@@ -13,7 +13,7 @@ export default {
   },
 
   getByInstitute(instituteId) {
-    return Repository.get(`${resource}/byinstitute/${instituteId}`);
+    return Repository.get(`/institute/${instituteId}/disciplines`);
   },
 
 };

@@ -9,34 +9,47 @@
           <div class="item">Enquete</div>
 
           <div id="search">
-            <sui-input  transparent class="fullwidth search" placeholder="Zoek naar onderwerp..." icon="search" icon-position="left"/>
+            <sui-input v-on:input="onSearchChanaged" v-model="searchQuery"  transparent class="fullwidth search" placeholder="Zoek naar onderwerp..." icon="search" icon-position="left"/>
+            <div class="results">
+              <sui-loader v-if="searching" class="centered loader" style="font-size: 18px" active inline />
+
+              <span class="value" v-if="searchMessage">{{searchMessage}}</span>
+
+              <h4 v-if="searchTopicsResult.length > 0">Onderwerpen</h4>
+              <div class="topic" v-for="topic in searchTopicsResult" v-bind:key="topic.topicId" v-on:click="onTopicSelect(topic)">
+                <div class="value">
+                  <span class="value-span">{{topic.value}}</span>
+                  <sui-icon class="next" name="angle right"/></div>
+              </div>
+
+              <h4 v-if="searchEntriesResult.length > 0">Opmerkingen</h4>
+              <div v-if="searchEntriesResult.length > 0" class="entries" v-on:click="onEntrySelect(searchEntriesResult)">
+                <div class="value">
+                  <span class="value-span">{{searchEntriesResult.length}} resultaten</span>
+                  <sui-icon class="next" name="angle right"/></div>
+              </div>
+
+            </div>
           </div>
         </sui-grid-row>
 
-        <sui-grid-row id="navigation">
-          <div class="item active">
-            Algemeen
-          </div>
-          <div class="item">
-            Onderwerpen
-          </div>
-          <div class="item">
-            Thema's
-          </div>
-        </sui-grid-row>
-
-        <div class="information">
+        <sui-grid-row class="information">
           <div class="title">
             Toelichting
           </div>
-          Welkom in de kwaliteitszorgtool! Hier is een overzicht te vinden van de kwalitatieve data van de NSE, welke bestaat uit alle open opmerkingen van studenten. Door de meest informatieve opmerkingen voor verschillende topics te visualiseren helpt deze tool met het verklaren van de kwantitatieve resultaten.
-          <br/>
-          <br/>
-          Benieuwd hoe deze grafieken tot stand zijn gekomen? De data is geprepareerd en daarna met behulp van een algoritme ingedeeld in verschillende topics. Vervolgens zijn voor die topics de meest informatieve opmerkingen geïdentificeerd, om op een effectieve manier inzicht te krijgen in de extra informatie die deze bevatten.
-        </div>
+
+          <div class="information-content" v-if="informationExpanded">
+            Welkom in de kwaliteitszorgtool! Hier is een overzicht te vinden van de kwalitatieve data van de NSE, welke bestaat uit alle open opmerkingen van studenten. Door de meest informatieve opmerkingen voor verschillende topics te visualiseren helpt deze tool met het verklaren van de kwantitatieve resultaten.
+            <br/>
+            <br/>
+            Benieuwd hoe deze grafieken tot stand zijn gekomen? De data is geprepareerd en daarna met behulp van een algoritme ingedeeld in verschillende topics. Vervolgens zijn voor die topics de meest informatieve opmerkingen geïdentificeerd, om op een effectieve manier inzicht te krijgen in de extra informatie die deze bevatten.
+          </div>
+          <sui-image size="tiny" floated="right" src="/assets/logo.png"/>
+        </sui-grid-row>
+
       </sui-grid-column>
 
-      <sui-grid-column id="content" class="center-container" :width="showMenu ? 13 : 16">
+      <sui-grid-column id="content" class="center-container" v-bind:class="{'menu-ignore': showMenu}" :width="showMenu ? 13 : 16">
         <router-view></router-view>
         <portal-target name="semantic-ui-vue"/>
       </sui-grid-column>
@@ -47,20 +60,123 @@
 
 <script>
 
+  import {mapActions, mapGetters, mapState} from "vuex";
+  import {SEARCH_ENTRIES, SEARCH_TOPICS} from "./store/actions";
+
   export default {
 
     name: 'app',
+    data() {
+      return {
+        searching: false,
+        informationExpanded: true,
+        searchQuery: "",
+        searchTopicsResult: [],
+        searchEntriesResult: [],
+        searchMessage: undefined
+      }
+    },
     computed: {
+
+      ...mapState('results', {
+        selectedResult: state => state.selected
+      }),
+
+      ...mapState('disciplines', {
+        selectedDisciplines: state => state.selected
+      }),
+
+      ...mapGetters('dashboard', {
+        selectedYears: 'selectedYears'
+      }),
+
       showMenu() {
         return this.$route.path !== '/';
       }
     },
 
+    watch: {
+      searchQuery() {
+        if (this.searchQuery === "") {
+          this.resetSearch()
+        }
+        else {
+          this.searchTopicsResult = [];
+          this.searchEntriesResult = [];
+        }
+      }
+    },
+
     methods: {
 
-      onBackButtonClick() {
-        this.$router.push('/');
+      ...mapActions('topics', {
+        searchTopics: SEARCH_TOPICS
+      }),
+
+      ...mapActions('entries', {
+        searchEntries: SEARCH_ENTRIES
+      }),
+
+      resetSearch() {
+        this.searchTopicsResult = [];
+        this.searchEntriesResult = [];
+        this.searching = false;
+        this.searchQuery = "";
+        this.searchMessage = false;
       },
+
+      onTopicSelect(topic) {
+        this.$router.push('/dashboard/topic/' + topic.topicId)
+      },
+
+      onEntrySelect() {
+        this.$router.push({
+          path: '/dashboard/entries',
+          query: {
+            query: this.searchQuery,
+            years: this.selectedYears,
+            disciplineIds: this.selectedDisciplines.map(d => d.disciplineId)
+          }
+        });
+      },
+
+      onSearchChanaged(value) {
+
+        if (value.length === 0) this.resetSearch();
+
+        if (value.length < 3) return;
+
+        this.searching = true;
+        this.searchMessage = undefined;
+
+        if (this.searchTimer) clearTimeout(this.searchTimer);
+
+        this.searchTimer = setTimeout(() => {
+
+          const promiseTopics = this.searchTopics({
+            searchQuery: value,
+            result: this.selectedResult
+          });
+
+          const promiseEntries = this.searchEntries({
+            searchQuery: value,
+            years: this.selectedYears,
+            disciplineIds: this.selectedDisciplines.map(d => d.disciplineId)
+          });
+
+          Promise.all([promiseEntries, promiseTopics]).then((values) => {
+            this.searchEntriesResult = values[0];
+            this.searchTopicsResult = values[1];
+            this.searching = false;
+            this.searchMessage = this.searchTopicsResult.length < 1 && this.searchEntriesResult.length < 1 ? 'Geen resultaten.' : undefined;
+          }).catch(() => {
+            this.searching = false;
+            this.searchMessage = 'Er is een fout opgetreden.'
+          })
+
+        }, 1000)
+
+      }
 
     },
 
@@ -141,6 +257,8 @@
     justify-content: space-between;
     flex-direction: column;
     padding: 0 !important;
+    padding-top: 36px !important;
+    position: fixed;
   }
 
   #main-top .header {
@@ -150,7 +268,7 @@
   }
 
   #main-top > * {
-    padding: 32px 14px !important;
+    padding: 0 14px !important;
   }
 
   #main-top #search  {
@@ -191,6 +309,10 @@
 
   #content {
     width: 100%;
+  }
+
+  .menu-ignore {
+    margin-left: 360px !important;
   }
 
   .search {
@@ -242,6 +364,7 @@
     height: auto;
     margin-bottom: 32px;
     margin-top: 32px;
+    
   }
 
   .title .item {
@@ -257,12 +380,63 @@
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
     font-weight: 300;
+    padding-bottom: 0 !important;
   }
 
   .information .title {
     font-size: 14px;
     font-weight: 800;
     margin: 6px 0;
+  }
+
+  .information-content {
+    padding-bottom: 16px !important;
+    border-bottom: #aeaeae 1px solid;
+  }
+
+  .information img {
+    margin: 8px 0 16px 0 !important;
+  }
+
+  .loader {
+    margin-top: 16px !important;
+  }
+
+  .results {
+    margin-top: 16px;
+  }
+
+  .topic {
+    padding: 2px 0;
+  }
+
+  .value:hover {
+    color: #1a1a1a;
+  }
+
+  h4 {
+    margin-bottom: 6px !important;
+    margin-top: 12px !important;
+    color: #663366;
+  }
+
+  .value-span {
+    width: 310px !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .next {
+    display: inline-block;
+    vertical-align: center;
+    color: #663366;
+    font-size: 14px;
+  }
+
+  .value {
+    font-size: 14px;
   }
 
 </style>

@@ -2,9 +2,8 @@ import {SET_AVAILABLE_YEARS, SET_END_YEAR, SET_SELECTED_INSTITUTES, SET_START_YE
 
 const state = {
   selectedInstitutes: [],
-  startYear: 2012,
   endYear: 2018,
-  availableYears: [2012, 2013, 2014, 2015, 2016, 2017, 2018],
+  availableYears: [2013, 2014, 2015, 2016, 2017, 2018],
 };
 
 const mutations = {
