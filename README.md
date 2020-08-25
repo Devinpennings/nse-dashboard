@@ -1,5 +1,5 @@
 # NSE | Vue Frontend
-The frontend is a Vue used to allow end users to get insights in the NSE data. 
+The frontend is a Vue used to allow end users to get insights in the Nationale Studenten Enquete data which are gained from te backend application. 
 
 ## Installation
 
